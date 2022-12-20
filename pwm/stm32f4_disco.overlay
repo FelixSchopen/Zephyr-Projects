@@ -1,0 +1,15 @@
+/ {
+ 
+};
+
+&timers1 {
+    status = "okay";
+    st,prescaler = <10000>;
+    pmw1: pwm {
+        status = "okay";
+        pinctrl-0 = <&tim1_ch2_pa9>;
+        pinctrl-names = "default";
+        label = "PWM";
+    };
+};
+

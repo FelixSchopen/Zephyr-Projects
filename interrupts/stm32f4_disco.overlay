@@ -1,0 +1,16 @@
+/ {
+	gpio_pins { 
+		compatible = "gpio-keys";
+		pa4: pa4 {
+			gpios = <&gpioa 4 GPIO_ACTIVE_HIGH>;
+		};
+		pa5: pa5 {
+			gpios = <&gpioa 5 GPIO_ACTIVE_HIGH>;
+		};
+	};
+
+	aliases {
+		pina4 = &pa4;
+		pina5 = &pa5;
+	};
+};

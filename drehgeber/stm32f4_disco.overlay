@@ -1,0 +1,33 @@
+/ {
+    stepper {
+        compatible = "gpio-keys";
+        clk: pe11 {
+            gpios = <&gpioe 11 GPIO_ACTIVE_HIGH>;
+        };
+        dt: pe12 {
+            gpios = <&gpioe 12 GPIO_ACTIVE_HIGH>;
+        };
+        sw: pe13 {
+            gpios = <&gpioe 13 GPIO_ACTIVE_HIGH>;
+        };
+    };
+
+    led {
+        led: pa9 {
+			gpios = <&gpioa 9 GPIO_ACTIVE_HIGH>;
+		};
+    };
+ 
+};
+
+&timers1 {
+    status = "okay";
+    st,prescaler = <9999999>;
+    pwm: pwm {
+        status = "okay";
+        pinctrl-0 = <&tim1_ch2_pa9>;
+        pinctrl-names = "default";
+    };
+};
+
+
