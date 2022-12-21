@@ -2,14 +2,13 @@
  
 };
 
-&timers1 {
+&timers4 {
     status = "okay";
-    st,prescaler = <10000>;
+    st,prescaler = <30000>;
     pmw1: pwm {
         status = "okay";
-        pinctrl-0 = <&tim1_ch2_pa9>;
+        pinctrl-0 = <&tim4_ch1_pd12>;
         pinctrl-names = "default";
-        label = "PWM";
     };
 };
 

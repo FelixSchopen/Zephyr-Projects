@@ -1,0 +1,16 @@
+/ {
+ 
+};
+
+&timers1 {
+    status = "okay";
+    st,prescaler = <10000>;
+    pwm1: pwm {
+        status = "okay";
+        pinctrl-0 = <&tim1_ch2_pe11>;
+        pinctrl-names = "default";
+    };
+};  
+
+
+
