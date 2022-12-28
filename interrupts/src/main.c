@@ -72,8 +72,8 @@ void thread4(void){
         if(interrupt){
             gpio_pin_toggle_dt(&spec_PA4);
             interrupt=0;
+			k_msleep(160);
         }
-        k_msleep(160);
     }
 }
 
@@ -81,7 +81,7 @@ K_THREAD_DEFINE(t0, STACKSIZE, thread0, NULL, NULL, NULL, PRIORITY, 0, 0);
 K_THREAD_DEFINE(t1, STACKSIZE, thread1, NULL, NULL, NULL, PRIORITY, 0, 0);
 K_THREAD_DEFINE(t2, STACKSIZE, thread2, NULL, NULL, NULL, PRIORITY, 0, 0);
 K_THREAD_DEFINE(t3, STACKSIZE, thread3, NULL, NULL, NULL, PRIORITY, 0, 0);
-K_THREAD_DEFINE(t4, STACKSIZE, thread4, NULL, NULL, NULL, PRIORITY, 0, 0);
+K_THREAD_DEFINE(t4, STACKSIZE, thread4, NULL, NULL, NULL, PRIORITY+1, 0, 0);
 
 // Interrupt Service Routine
 void isr_toggle_pin(void){

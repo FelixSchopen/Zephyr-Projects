@@ -1,0 +1,46 @@
+/ {
+    
+    interrupts {
+        compatible = "gpio-keys";
+        itr_button: pd0 {
+			gpios = <&gpiod 0 GPIO_ACTIVE_HIGH>;
+		};
+        itr_led: pc11 {
+			gpios = <&gpioc 11 GPIO_ACTIVE_HIGH>;
+		};
+    };
+
+
+    stepper {
+        compatible = "gpio-keys";
+        clk: pb6 {
+            gpios = <&gpiob 6 GPIO_ACTIVE_HIGH>;
+        };
+        dt: pb7 {
+            gpios = <&gpiob 7 GPIO_ACTIVE_HIGH>;
+        };
+        sw: pb8 {
+            gpios = <&gpiob 8 GPIO_ACTIVE_HIGH>;
+        };
+    };
+
+};
+
+&timers9 {
+    status = "okay";
+    st,prescaler = <40000>;
+    servo: pwm {
+        status = "okay";
+        pinctrl-0 = <&tim9_ch1_pe5>;
+        pinctrl-names = "default";
+    };
+};
+
+poti: &adc1 {
+    status = "okay";
+    pinctrl-0 = <&adc1_in9_pb1>;
+    pinctrl-names = "default";
+};
+
+
+

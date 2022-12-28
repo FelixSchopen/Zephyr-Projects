@@ -14,8 +14,6 @@ const struct device* pwm_dev = DEVICE_DT_GET(DT_NODELABEL(pwm1));
 
 void main(void){
 
-
-
     while(1){
         pwm_set(pwm_dev, 2, PWM_MSEC(20), PWM_MSEC(0.5), PWM_POLARITY_NORMAL);
         k_msleep(2000);

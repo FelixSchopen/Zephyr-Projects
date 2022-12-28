@@ -32,11 +32,11 @@ void main(void){
     gpio_pin_t dt;
 
     int pulse = 250;
-    pwm_set(pwm_dev, 2, PWM_MSEC(500), PWM_MSEC(pulse), PWM_POLARITY_NORMAL);
+    pwm_set(pwm_dev, 2, PWM_MSEC(500), PWM_MSEC(0), PWM_POLARITY_NORMAL);
 
     while(1){
-        //clk = gpio_pin_get_raw(clk_spec.port, clk_spec.pin); 
-        clk = gpio_pin_get_dt(&clk_spec); 
+        clk = gpio_pin_get_raw(clk_spec.port, clk_spec.pin); 
+        //clk = gpio_pin_get_dt(&clk_spec); 
         if(clk != clk_last){
             if(gpio_pin_get_dt(&dt_spec) != clk){
                 if(pulse < 500){
