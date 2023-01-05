@@ -2,7 +2,7 @@
 #include "../include/setup.h"
 
 // Button
-void isr_toggle_pin(void){
+void isr_button(void){
     button_pressed = 1;
 }
 
@@ -13,12 +13,12 @@ void isr_rotary_encoder(void){
 	if(clk != clk_last){
 		if(dt != clk){			
 			if(pwm_pulse < 2400){
-				pwm_pulse+=100;
+				pwm_pulse+=120;
 			}
 		}
 		else{
 			if(pwm_pulse > 600){
-				pwm_pulse-=100;
+				pwm_pulse-=120;
 			}
 		}
 	}

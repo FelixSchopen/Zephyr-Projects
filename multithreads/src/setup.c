@@ -28,7 +28,7 @@ void setup(void){
     gpio_pin_configure_dt(&itr_button_spec, GPIO_INPUT);
 
 	gpio_pin_interrupt_configure_dt(&itr_button_spec, GPIO_INT_EDGE_TO_ACTIVE);
-    gpio_init_callback(&cb_data, (gpio_callback_handler_t)isr_toggle_pin, BIT(itr_button_spec.pin));
+    gpio_init_callback(&cb_data, (gpio_callback_handler_t)isr_button, BIT(itr_button_spec.pin));
 	gpio_add_callback(itr_button_spec.port, &cb_data);
 
 	gpio_pin_interrupt_configure_dt(&clk_spec, GPIO_INT_EDGE_BOTH);

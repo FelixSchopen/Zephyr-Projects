@@ -6,7 +6,7 @@
 
 #include "../include/setup.h"
 
-void interrupt_thread(void){
+void t_button(void){
 	while(1){
 		if(button_pressed){
 			gpio_pin_toggle_dt(&itr_led_spec);
@@ -21,23 +21,24 @@ void interrupt_thread(void){
 			k_msleep(150);
 			button_pressed = 0;
 		}
-		k_msleep(50);
+		k_msleep(10);
 	}
 }
 
-void servo_thread(void){
+void t_servo(void){
 	while(1){
 		pwm_set(pwm_servo, 1, PWM_USEC(20000), PWM_USEC(pwm_pulse), PWM_POLARITY_NORMAL);
 		k_msleep(50);
 	}
 }
 
-void led1_thread(void){
+
+void t_led1(void){
 	while(1){
 		if(deadlock){
 			// Try to lock mutex1
 			while(mutex1 != 1) {
-				k_msleep(50);
+				k_usleep(0.1);
 			}
 			mutex1 = 0;
 
@@ -45,7 +46,7 @@ void led1_thread(void){
 
 			// Try to lock mutex2
 			while(mutex2 != 1){
-				k_msleep(50);
+				k_usleep(0.1);
 			}
 			mutex2 = 0;
 			
@@ -62,19 +63,19 @@ void led1_thread(void){
 	}
 }
 
-void led2_thread(void){
+void t_led2(void){
 	while(1){
 		if(deadlock){
 			k_msleep(1);
 			// Try to lock mutex2
 			while(mutex2 != 1) {
-				k_msleep(50);
+				k_usleep(0.1);
 			}
 			mutex2 = 0;
 
 			// Try to lock mutex1
 			while(mutex1 != 1){
-				k_msleep(50);
+				k_usleep(0.1);
 			}
 			mutex1 = 0;
 
@@ -91,10 +92,10 @@ void led2_thread(void){
 	}
 }
 
-K_THREAD_DEFINE(t0, 1024, interrupt_thread, NULL, NULL, NULL, 7, 0, 0);
-K_THREAD_DEFINE(t1, 1024, servo_thread, NULL, NULL, NULL, 7, 0, 0);
-K_THREAD_DEFINE(t2, 1024, led1_thread, NULL, NULL, NULL, 6, 0, 0);
-K_THREAD_DEFINE(t3, 1024, led2_thread, NULL, NULL, NULL, 6, 0, 0);
+K_THREAD_DEFINE(button, 1024, t_button, NULL, NULL, NULL, -7, 0, 0);
+K_THREAD_DEFINE(servo, 1024, t_servo, NULL, NULL, NULL, -3, 0, 0);
+K_THREAD_DEFINE(led1, 1024, t_led1, NULL, NULL, NULL, -5, 0, 0);
+K_THREAD_DEFINE(led2, 1024, t_led2, NULL, NULL, NULL, -5, 0, 0);
 
 
 void main(void){

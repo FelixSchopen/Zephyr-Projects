@@ -3,6 +3,7 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/pwm.h>
 #include <zephyr/devicetree.h>
+#include <stdio.h>
 #include "isr.h"
 
 #define SERVO_MAX_PULSE 2400
@@ -29,6 +30,7 @@ extern struct gpio_callback cb_data3;
 
 // Basic Variables
 extern uint8_t button_pressed;
+extern uint8_t rotary_encoder_rdy;
 extern uint8_t deadlock;
 extern gpio_pin_t clk_last; 
 extern gpio_pin_t clk;
@@ -38,6 +40,9 @@ extern uint16_t pwm_pulse;
 // Mutex
 extern uint8_t mutex1;
 extern uint8_t mutex2;
+
+extern struct k_sem my_sem1;
+
 
 // Setup function
 void setup(void);
