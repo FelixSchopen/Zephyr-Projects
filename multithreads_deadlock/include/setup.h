@@ -5,6 +5,7 @@
 #include <zephyr/devicetree.h>
 #include <stdio.h>
 #include "isr.h"
+#include "SEGGER_RTT.h"
 
 #define SERVO_MAX_PULSE 2400
 #define SERVO_MIN_PULSE 600

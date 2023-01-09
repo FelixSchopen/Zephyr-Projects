@@ -4,7 +4,6 @@
 // Button
 void isr_button(void){
     button_pressed = 1;
-	printf("Button pressed\n");
 }
 
 // Rotary Encoder

@@ -9,6 +9,7 @@
 void t_button(void){
 	while(1){
 		if(button_pressed){
+			SEGGER_RTT_WriteString(0, "Button pressed!\n");
 			gpio_pin_toggle_dt(&itr_led_spec);
 			if(!deadlock){
 				deadlock = 1;
