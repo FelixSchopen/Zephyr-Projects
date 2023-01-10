@@ -10,11 +10,7 @@
 #include <zephyr/drivers/pwm.h>
 #include <zephyr/drivers/can.h>
 #include <zephyr/devicetree.h>
-#include <stdio.h>
 #include "SEGGER_RTT.h"
-
-CAN_MSGQ_DEFINE(counter_msgq, 2);
-
 
 const struct device* can1_dev = DEVICE_DT_GET(DT_NODELABEL(can1));
 
@@ -44,7 +40,6 @@ void can_receiver_callback(const struct device *dev, struct can_frame *frame, vo
     SEGGER_RTT_WriteString(0, "Received can_frame\n");
     if(data == 10){
         SEGGER_RTT_WriteString(0, "Data: 10\n");
-        printf("Test\n");
     }
     if(data != 10){
         SEGGER_RTT_WriteString(0, "Error\n");
@@ -59,7 +54,7 @@ void main(void){
 
     const struct can_filter my_filter = {
 		.id = 0x123,
-        .flags = CAN_FILTER_IDE | CAN_EXT_ID_MASK
+        .flags = CAN_EXT_ID_MASK
 	};
 
     int filter_id = can_add_rx_filter(can1_dev, can_receiver_callback, NULL, &my_filter);
