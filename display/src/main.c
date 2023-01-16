@@ -10,59 +10,63 @@
 #include <zephyr/drivers/pwm.h>
 #include <zephyr/drivers/can.h>
 #include <zephyr/devicetree.h>
-#include <zephyr/net/mqtt.h>
 #include <zephyr/drivers/display.h>
+#include <zephyr/drivers/spi.h>
 #include <stdio.h>
-
 #include <string.h>
-
+#include <lvgl.h>
+	
 #include "SEGGER_RTT_printf.c"
 
-const struct gpio_dt_spec chip_select = GPIO_DT_SPEC_GET(DT_NODELABEL(cs), gpios);
 
-//const struct device* spi_dev = DEVICE_DT_GET(DT_NODELABEL(spi));
+const struct device* spi_dev = DEVICE_DT_GET(DT_NODELABEL(spi));
 const struct device* display_dev = DEVICE_DT_GET(DT_NODELABEL(display));
+const struct gpio_dt_spec display_chip_select = SPI_CS_GPIOS_DT_SPEC_GET(DT_NODELABEL(display));
 
-void* data = "Hello World";
+char* data = "Hello World";
 int ret;
+int len;
+struct display_capabilities display_cap;
+
+struct display_buffer_descriptor des = {
+   .width = 100,
+   .height = 20,
+   .pitch = 5,
+};
+
+
 
 void main(void){ 
 
-   gpio_pin_configure_dt(&chip_select, GPIO_OUTPUT_ACTIVE);
-   uint32_t len = strlen(data);
+	lv_init();
 
-   const struct display_buffer_descriptor des = {
-      .width = 100,
-      .height = 20,
-      .pitch = 5,
-      .buf_size = len
-   };
+   len = sizeof(data);
+   des.buf_size = len;
+
+   gpio_pin_configure_dt(&display_chip_select, GPIO_OUTPUT_INACTIVE);
 
 	if (display_dev == NULL || !device_is_ready(display_dev)) {
-		SEGGER_RTT_WriteString(0, "device not found.  Aborting test.\n");
+		SEGGER_RTT_WriteString(0, "display not ready.\n");
 	}
-   else { 
-		SEGGER_RTT_WriteString(0, "display found\n");
+   	else { 
+		SEGGER_RTT_WriteString(0, "display ready\n");
 	}
 
+	display_get_capabilities(display_dev, &display_cap);
+	SEGGER_RTT_printf(0, "x res: %d\n", display_cap.x_resolution);
+	SEGGER_RTT_printf(0, "y res: %d\n", display_cap.y_resolution);
+
+	display_blanking_off(display_dev);
+	
    while(1){
-      struct display_capabilities display_cap;
-      display_get_capabilities(display_dev, &display_cap);
-
-      int ret = display_write(display_dev, 50, 50, &des, (void*)data);
-      if(ret != 0){
-		   SEGGER_RTT_WriteString(0, "error\n");
-         SEGGER_RTT_printf(0, "error: %d\n", ret);
-      }
-      else {
-         SEGGER_RTT_printf(0, "success\n");
-      }
-
-      SEGGER_RTT_printf(0, "x res: %d\n", display_cap.x_resolution);
-      SEGGER_RTT_printf(0, "x res: %d\n", display_cap.x_resolution);
-
-
-      k_msleep(5000);
+		ret = display_write(display_dev, 50, 50, &des, data);
+		
+		if(ret != 0){
+			SEGGER_RTT_printf(0, "display_write error: %d\n", ret);
+		}
+		else {
+			SEGGER_RTT_printf(0, "wrote to display\n");
+		}
+		k_msleep(5000);
    }
 }
-

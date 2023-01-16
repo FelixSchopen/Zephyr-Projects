@@ -1,14 +1,19 @@
+/*
+ * Copyright (c) 2021 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 / {
 
 };
 
-spi: &spi1 {
+	spi: &spi1 {
 	status = "okay";
 	pinctrl-0 = <&spi1_sck_pa5 &spi1_miso_pa6 &spi1_mosi_pa7>;
 	cs-gpios = < &gpioc 5 GPIO_ACTIVE_LOW >;
 	pinctrl-names = "default";
 	clock-frequency = <10000000>;
-	
+
 
 	display: ili9341@0 {
 		status = "okay";
@@ -21,8 +26,3 @@ spi: &spi1 {
 		width = <0>;
 	};
 };	
-
-
-
-
-
