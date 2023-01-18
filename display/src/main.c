@@ -14,7 +14,6 @@
 #include <zephyr/drivers/spi.h>
 #include <stdio.h>
 #include <string.h>
-#include <lvgl.h>
 	
 #include "SEGGER_RTT_printf.c"
 
@@ -34,11 +33,7 @@ struct display_buffer_descriptor des = {
    .pitch = 5,
 };
 
-
-
 void main(void){ 
-
-	lv_init();
 
    len = sizeof(data);
    des.buf_size = len;
@@ -52,13 +47,10 @@ void main(void){
 		SEGGER_RTT_WriteString(0, "display ready\n");
 	}
 
-	display_get_capabilities(display_dev, &display_cap);
-	SEGGER_RTT_printf(0, "x res: %d\n", display_cap.x_resolution);
-	SEGGER_RTT_printf(0, "y res: %d\n", display_cap.y_resolution);
-
 	display_blanking_off(display_dev);
 	
    while(1){
+
 		ret = display_write(display_dev, 50, 50, &des, data);
 		
 		if(ret != 0){

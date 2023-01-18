@@ -287,6 +287,8 @@ void main(void)
 	y = capabilities.y_resolution - rect_h;
 
 	while (1) {
+		LOG_INF("Could not allocate memory. Aborting sample.");
+
 		fill_buffer_fnc(BOTTOM_LEFT, grey_count, buf, buf_size);
 		display_write(display_dev, x, y, &buf_desc, buf);
 		++grey_count;
