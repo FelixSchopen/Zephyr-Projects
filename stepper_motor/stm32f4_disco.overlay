@@ -1,0 +1,16 @@
+/ {
+ 
+    gpio-pins {
+        compatible = "gpio-keys";
+        dir: pc10 {
+            gpios = <&gpioc 10 GPIO_ACTIVE_HIGH>;
+        };
+        step: pc11 {
+            gpios = <&gpioc 11 GPIO_ACTIVE_HIGH>;
+        };
+        enable: pd6 {
+            gpios = <&gpiod 6 GPIO_ACTIVE_LOW>;
+        }; 
+    };
+
+};
