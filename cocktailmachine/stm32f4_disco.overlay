@@ -14,3 +14,11 @@
     };
 
 };
+
+usart: &usart3 {
+	status = "okay";
+	pinctrl-0 = <&usart3_tx_pb10 &usart3_rx_pb11 >;
+	pinctrl-names = "default";
+	current-speed = <9600>;
+};
+

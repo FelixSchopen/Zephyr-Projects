@@ -62,8 +62,6 @@ void main(void){
     gpio_pin_configure_dt(&led, GPIO_OUTPUT_INACTIVE);
 
     k_timer_init(&my_timer, uart_timer_cb, NULL);
-
-
     uart_irq_rx_enable(uart_dev); 
     uart_irq_callback_user_data_set(uart_dev, rx_callback, (void*)&idx);
 
