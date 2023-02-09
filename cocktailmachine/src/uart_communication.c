@@ -49,7 +49,7 @@ void rx_callback(const struct device *dev, void *user_data){
 // Timer callback executes when uart reception completed
 void uart_timer_cb(struct k_timer *timer_id){
 
-    //SEGGER_RTT_printf(0, "Received: %s\n", rx_buf);
+    SEGGER_RTT_printf(0, "Received: %s\n", rx_buf);
 
     // Check if valid command identifier was received
     if(strcmp(rx_buf, "drinks") == 0 || strcmp(rx_buf, "cocktails") == 0 || strcmp(rx_buf, "mix") == 0){
@@ -63,6 +63,7 @@ void uart_timer_cb(struct k_timer *timer_id){
         strncpy(drinks_JSON, rx_buf, sizeof(drinks_JSON));
         int ret = initialize_drinks();
         if(ret != 0){
+            SEGGER_RTT_printf(0, "\n");
             SEGGER_RTT_printf(0, "Error while initializing drinks\n");
         }
     }
@@ -70,7 +71,8 @@ void uart_timer_cb(struct k_timer *timer_id){
     else if(strcmp(cmd_idetifier, "cocktails") == 0){
         strncpy(cocktails_JSON, rx_buf, sizeof(cocktails_JSON));
         int ret = initialize_cocktails();
-        if(ret != 0){
+        if(ret != 0){            
+            SEGGER_RTT_printf(0, "\n");
             SEGGER_RTT_printf(0, "Error while initializing cocktails\n");
         }        
         initialized = 1;

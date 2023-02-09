@@ -40,7 +40,7 @@ static const struct json_obj_descr cocktail_des[] = {
 };
 
 struct drink_struct { 
-    struct drink drinks[10]; 
+    struct drink drinks[4]; 
     size_t count; 
 };
 
@@ -50,19 +50,19 @@ struct ingredient_struct {
 };
 
 struct cocktail_struct { 
-    struct cocktail cocktails[10]; 
+    struct cocktail cocktails[50]; 
     size_t count; 
 };
 
 
 struct json_obj_descr drinks_array_des[] = {
-    JSON_OBJ_DESCR_OBJ_ARRAY(struct drink_struct, drinks, 10, count, drink_des, ARRAY_SIZE(drink_des)), 
+    JSON_OBJ_DESCR_OBJ_ARRAY(struct drink_struct, drinks, 4, count, drink_des, ARRAY_SIZE(drink_des)), 
 };
 struct json_obj_descr ingredients_array_des[] = {
     JSON_OBJ_DESCR_OBJ_ARRAY(struct ingredient_struct, ingredients, 10, count, ingredient_des, ARRAY_SIZE(ingredient_des)), 
 };
 struct json_obj_descr cocktails_array_des[] = {
-    JSON_OBJ_DESCR_OBJ_ARRAY(struct cocktail_struct, cocktails, 10, count, cocktail_des, ARRAY_SIZE(cocktail_des)), 
+    JSON_OBJ_DESCR_OBJ_ARRAY(struct cocktail_struct, cocktails, 50, count, cocktail_des, ARRAY_SIZE(cocktail_des)), 
 };
 
 struct drink_struct drinks;
