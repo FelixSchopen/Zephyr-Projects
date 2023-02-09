@@ -32,4 +32,9 @@ extern int ready;
 // Setup function
 void setup(void);
 
+int initialize_cocktails(void);
+int initialize_drinks(void);
+
+
+
 

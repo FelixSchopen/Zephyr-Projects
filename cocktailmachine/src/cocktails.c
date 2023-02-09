@@ -69,12 +69,10 @@ struct drink_struct drinks;
 struct ingredient_struct ingredients;
 struct cocktail_struct cocktails;
 
+int initialize_drinks(void){
+    return json_arr_parse(drinks_JSON, sizeof(drinks_JSON), drinks_array_des, &drinks);
+}
+
 int initialize_cocktails(void){
-    int ret;
-    ret = json_arr_parse(drinks_JSON, sizeof(drinks_JSON), drinks_array_des, &drinks);
-    if(ret < 0){
-        return ret;
-    }
-    ret = json_arr_parse(cocktails_JSON, sizeof(cocktails_JSON), cocktails_array_des, &cocktails);
-    return ret;
+    return json_arr_parse(cocktails_JSON, sizeof(cocktails_JSON), cocktails_array_des, &cocktails);
 }

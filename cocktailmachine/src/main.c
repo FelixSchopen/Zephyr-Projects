@@ -18,12 +18,6 @@ void main(void){
 		k_msleep(5);
 	}	
 
-	ret = initialize_cocktails();
-	if(ret != 0){
-		SEGGER_RTT_printf(0, "Unable to initialize Cocktails, err: %d\n", ret);
-		return;
-	}
-
 	SEGGER_RTT_printf(0, "Ready\n");
 
 	while(1){
