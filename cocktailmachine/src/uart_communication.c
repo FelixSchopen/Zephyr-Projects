@@ -12,7 +12,7 @@ uint8_t initialized = 0;
 uint32_t idx = 0;
 uint8_t rx_buf[512];
 struct k_timer my_timer;
-char initialization_identifier[32];
+char cmd_idetifier[32];
 
 char drinks_JSON[512];
 char ingredients_JSON[512];
@@ -46,33 +46,43 @@ void rx_callback(const struct device *dev, void *user_data){
     }
 }      
 
-// Timer callback to signal a completeted UART receipt
+// Timer callback executes when uart reception completed
 void uart_timer_cb(struct k_timer *timer_id){
 
-    if(initialized){
-        SEGGER_RTT_printf(0, "Initialization already completed\n");
-        return;
-    }
-    
-    if(strcmp(rx_buf, "drinks") == 0 || strcmp(rx_buf, "ingredients") == 0 || strcmp(rx_buf, "cocktails") == 0){
-        strncpy(initialization_identifier, rx_buf, sizeof(initialization_identifier));
+    SEGGER_RTT_printf(0, "Received: %s\n", rx_buf);
+
+    // Check if valid command identifier was received
+    if(strcmp(rx_buf, "drinks") == 0 || strcmp(rx_buf, "cocktails") == 0 || strcmp(rx_buf, "mix") == 0){
+        strncpy(cmd_idetifier, rx_buf, sizeof(cmd_idetifier));
         memset(&rx_buf[0], 0, sizeof(rx_buf));
         idx = 0;
         return;
     }
 
-    if(strcmp(initialization_identifier, "drinks") == 0){
+    if(strcmp(cmd_idetifier, "drinks") == 0){
         strncpy(drinks_JSON, rx_buf, sizeof(drinks_JSON));
     }
-    else if(strcmp(initialization_identifier, "ingredients") == 0){
-        strncpy(ingredients_JSON, rx_buf, sizeof(ingredients_JSON));
-    }
-    else if(strcmp(initialization_identifier, "cocktails") == 0){
+
+    else if(strcmp(cmd_idetifier, "cocktails") == 0){
         strncpy(cocktails_JSON, rx_buf, sizeof(cocktails_JSON));
         initialized = 1;
     }
 
-    strncpy(initialization_identifier, "", sizeof(initialization_identifier));
+    else if(strcmp(cmd_idetifier, "mix") == 0){
+        // TODO: wake up cocktail mixing task
+        char* ptr;
+        int cocktail_idx = atoi(strtok_r((char*)rx_buf, ",:", &ptr));
+        int cocktail_size = atoi(strtok_r(NULL, ",:", &ptr));
+        SEGGER_RTT_printf(0, "Mixing cocktail: %d\n", cocktail_idx);
+        SEGGER_RTT_printf(0, "Drink size: %d\n", cocktail_size);
+    }
+
+    else if(strcmp(cmd_idetifier, "cmd") == 0){
+        // execute command, used to show real time problems
+    }
+    
+    // reset identifier and buffer
+    strncpy(cmd_idetifier, "", sizeof(cmd_idetifier));
     memset(&rx_buf[0], 0, sizeof(rx_buf));
     idx = 0; 
 }

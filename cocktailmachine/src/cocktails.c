@@ -75,10 +75,6 @@ int initialize_cocktails(void){
     if(ret < 0){
         return ret;
     }
-    ret = json_arr_parse(ingredients_JSON, sizeof(ingredients_JSON), ingredients_array_des, &ingredients);
-    if(ret < 0){
-        return ret;
-    }
     ret = json_arr_parse(cocktails_JSON, sizeof(cocktails_JSON), cocktails_array_des, &cocktails);
     return ret;
 }

@@ -1,0 +1,23 @@
+/ {
+    gpio_pins { 
+        compatible = "gpio-keys";
+        pa4_node_label: pa4 {
+            gpios = <&gpioa 4 GPIO_ACTIVE_HIGH>;
+        };
+        pa5_node_label: pa5 {
+            gpios = <&gpioa 5 GPIO_ACTIVE_LOW>;
+        };
+    };
+};
+
+timer4: &timers4 {
+    status = "okay";
+    st,prescaler = <8400>;
+
+    pmw4: pwm {
+        status = "okay";
+        pinctrl-0 = <&tim4_ch1_pb6>;
+        pinctrl-names = "default";
+    };
+};
+
