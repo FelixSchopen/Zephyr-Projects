@@ -10,16 +10,15 @@ const struct device* uart_dev = DEVICE_DT_GET(DT_NODELABEL(usart));
 
 uint8_t initialized = 0;
 uint32_t idx = 0;
-uint8_t rx_buf[512];
+uint8_t rx_buf[2048];
 struct k_timer my_timer;
 char cmd_idetifier[32];
 
 char drinks_JSON[512];
-char ingredients_JSON[512];
-char cocktails_JSON[512];
+char cocktails_JSON[2048];
 
 // Write string to UART 
-// nused
+// unused
 void uart_write(const struct device* device, char* buf, int buf_size){
     for(int i = 0; i < buf_size; i++){
         uart_poll_out(uart_dev, buf[i]);
@@ -39,7 +38,7 @@ void rx_callback(const struct device *dev, void *user_data){
             one character at a time.
         */
         k_timer_stop(&my_timer);
-        k_timer_start(&my_timer, K_MSEC(50), K_NO_WAIT);
+        k_timer_start(&my_timer, K_MSEC(150), K_NO_WAIT);
 
         uart_fifo_read(dev, &rx_buf[i], 32);
         *((int*)user_data) = i+1;
@@ -49,7 +48,7 @@ void rx_callback(const struct device *dev, void *user_data){
 // Timer callback executes when uart reception completed
 void uart_timer_cb(struct k_timer *timer_id){
 
-    SEGGER_RTT_printf(0, "Received: %s\n", rx_buf);
+    //SEGGER_RTT_printf(0, "Received: %s\n", rx_buf);
 
     // Check if valid command identifier was received
     if(strcmp(rx_buf, "drinks") == 0 || strcmp(rx_buf, "cocktails") == 0 || strcmp(rx_buf, "mix") == 0){
@@ -66,6 +65,10 @@ void uart_timer_cb(struct k_timer *timer_id){
             SEGGER_RTT_printf(0, "\n");
             SEGGER_RTT_printf(0, "Error while initializing drinks\n");
         }
+        else{
+            SEGGER_RTT_printf(0, "Drinks updated\n");
+            uart_write(uart_dev, "Drinks initialized", sizeof("Drinks initialized"));
+        }
     }
 
     else if(strcmp(cmd_idetifier, "cocktails") == 0){
@@ -73,9 +76,13 @@ void uart_timer_cb(struct k_timer *timer_id){
         int ret = initialize_cocktails();
         if(ret != 0){            
             SEGGER_RTT_printf(0, "\n");
-            SEGGER_RTT_printf(0, "Error while initializing cocktails\n");
-        }        
-        initialized = 1;
+            SEGGER_RTT_printf(0, "Error while initializing cocktails\n");        
+        }  
+        else{
+            SEGGER_RTT_printf(0, "Cocktails updated\n");
+            uart_write(uart_dev, "Cocktails initialized", sizeof("Cocktails initialized"));
+            initialized = 1;
+        }      
     }
 
     else if(strcmp(cmd_idetifier, "mix") == 0){

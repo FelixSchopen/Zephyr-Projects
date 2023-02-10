@@ -23,8 +23,7 @@
 
 // Global Variables
 extern char drinks_JSON[512];
-extern char ingredients_JSON[512];
-extern char cocktails_JSON[512];
+extern char cocktails_JSON[2048];
 
 extern int ready;
 
