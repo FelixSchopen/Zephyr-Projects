@@ -21,15 +21,27 @@ void main(void){
     gpio_pin_configure_dt(&step_spec, GPIO_OUTPUT_INACTIVE);
     //gpio_pin_configure_dt(&enable_spec, GPIO_OUTPUT_ACTIVE);
 
+    gpio_pin_set_dt(&dir_spec, 0);
 
-    while(1){
+    for(int i = 0; i<200; i++){
+        gpio_pin_set_dt(&step_spec, 1);
+        k_usleep(700);
+        gpio_pin_set_dt(&step_spec, 0);
+        k_usleep(700);
+    }
+
+    k_msleep(1000);
+
+
+
+    /*while(1){
 
         gpio_pin_set_dt(&dir_spec, 0);
         for(int i = 0; i<200; i++){
             gpio_pin_set_dt(&step_spec, 1);
-            k_usleep(500);
+            k_usleep(1000);
             gpio_pin_set_dt(&step_spec, 0);
-            k_usleep(500);
+            k_usleep(1000);
         }
 
         k_msleep(1000);
@@ -37,11 +49,11 @@ void main(void){
         gpio_pin_set_dt(&dir_spec, 1);
         for(int i = 0; i<200; i++){
             gpio_pin_set_dt(&step_spec, 1);
-            k_usleep(500);
+            k_usleep(1000);
             gpio_pin_set_dt(&step_spec, 0);
-            k_usleep(500);
+            k_usleep(1000);
         }
         
         k_msleep(1000);
-    }
+    }*/
 }

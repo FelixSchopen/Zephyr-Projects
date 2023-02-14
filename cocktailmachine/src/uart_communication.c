@@ -92,6 +92,13 @@ void uart_timer_cb(struct k_timer *timer_id){
         int cocktail_size = atoi(strtok_r(NULL, ",:", &ptr));
         SEGGER_RTT_printf(0, "Mixing cocktail: %d\n", cocktail_idx);
         SEGGER_RTT_printf(0, "Drink size: %d\n", cocktail_size);
+
+        // Fill queue with positions of drinks
+        for(int i = 0; i<ARRAY_SIZE(cocktails.cocktails[cocktail_idx].ingredients); i++){
+            SEGGER_RTT_printf(0, "pos: %d\n", cocktails.cocktails[cocktail_idx].ingredients[i].drink.position);
+            k_queue_append(&position_q, &(cocktails.cocktails[cocktail_idx].ingredients[i].drink.position));
+        }
+        k_sem_give(&move_to_pos_sem);
     }
 
     else if(strcmp(cmd_idetifier, "cmd") == 0){

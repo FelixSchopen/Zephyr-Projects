@@ -8,9 +8,9 @@
 #include <stdio.h>
 #include <zephyr/data/json.h>
 
+#include "cocktails.h"
+
 #include "SEGGER_RTT.h"
-
-
 
 // GPIO specs
 
@@ -19,6 +19,13 @@
 
 
 // Interrupt callback data
+
+// Semaphores 
+extern struct k_sem move_to_pos_sem;
+extern struct k_sem fill_glass_sem;
+
+// Queues
+extern struct k_queue position_q;
 
 
 // Global Variables
@@ -33,7 +40,4 @@ void setup(void);
 
 int initialize_cocktails(void);
 int initialize_drinks(void);
-
-
-
 

@@ -1,73 +1,53 @@
 #include "../include/cocktails.h"
 
-
-// Struct to describe an available drink on the machine
-struct drink {
-    char* name;      // Name of the drink
-    int position;  // Position of the bottle
-};
-
-//  Struct to describe an ingredient for a specific cocktail
-//  i.e. Vodka 30ml
-struct ingredient {
-    struct drink drink; // Drink 
-    uint16_t amount;       // Amount of drink in % to have variable drink sizes
-};
-
-// Struct to describe a cocktail 
-struct cocktail {
-    char* name;      // Name of the cocktail
-    struct ingredient ingredients[10]; // Array of the ingredients
-    uint16_t ingredient_count;
-};
-
-
+/**
+ * JSON descriptor for drinks
+ * name: string, name of the drink
+ * position: number, position on machine
+*/
 static const struct json_obj_descr drink_des[] = {
     JSON_OBJ_DESCR_PRIM(struct drink, name, JSON_TOK_STRING),
     JSON_OBJ_DESCR_PRIM(struct drink, position, JSON_TOK_NUMBER),
 };
 
+/**
+ * JSON descriptor for ingredients
+ * drink: struct drink
+ * amount: number, amount of the ingredient in % 
+*/
 static const struct json_obj_descr ingredient_des[] = {
     JSON_OBJ_DESCR_OBJECT(struct ingredient, drink, drink_des),
     JSON_OBJ_DESCR_PRIM(struct ingredient, amount, JSON_TOK_NUMBER),
 };
 
+/**
+ * JSON descriptor for cocktails
+ * name: string
+ * ingredients: struct ingredient[], array of ingredients for this cocktail
+ * ingredient_count: number, length of ingredient array of this coocktail
+*/
 static const struct json_obj_descr cocktail_des[] = {
     JSON_OBJ_DESCR_PRIM(struct cocktail, name, JSON_TOK_STRING),
-    JSON_OBJ_DESCR_OBJ_ARRAY(struct cocktail, ingredients, 10, ingredient_count, ingredient_des, ARRAY_SIZE(ingredient_des)),
+    JSON_OBJ_DESCR_OBJ_ARRAY(struct cocktail, ingredients, 4, ingredient_count, ingredient_des, ARRAY_SIZE(ingredient_des)),
     JSON_OBJ_DESCR_PRIM(struct cocktail, ingredient_count, JSON_TOK_NUMBER),
 
 };
 
-struct drink_struct { 
-    struct drink drinks[4]; 
-    size_t count; 
+/**
+ * Array descriptors to save drinks and cocktails in an array-struct
+*/
+static struct json_obj_descr drinks_array_des[] = {
+    JSON_OBJ_DESCR_OBJ_ARRAY(struct drink_array, drinks, 4, count, drink_des, ARRAY_SIZE(drink_des)), 
+};
+static const struct json_obj_descr cocktails_array_des[] = {
+    JSON_OBJ_DESCR_OBJ_ARRAY(struct cocktail_array, cocktails, 50, count, cocktail_des, ARRAY_SIZE(cocktail_des)), 
 };
 
-struct ingredient_struct { 
-    struct ingredient ingredients[10]; 
-    size_t count; 
-};
-
-struct cocktail_struct { 
-    struct cocktail cocktails[50]; 
-    size_t count; 
-};
-
-
-struct json_obj_descr drinks_array_des[] = {
-    JSON_OBJ_DESCR_OBJ_ARRAY(struct drink_struct, drinks, 4, count, drink_des, ARRAY_SIZE(drink_des)), 
-};
-struct json_obj_descr ingredients_array_des[] = {
-    JSON_OBJ_DESCR_OBJ_ARRAY(struct ingredient_struct, ingredients, 10, count, ingredient_des, ARRAY_SIZE(ingredient_des)), 
-};
-struct json_obj_descr cocktails_array_des[] = {
-    JSON_OBJ_DESCR_OBJ_ARRAY(struct cocktail_struct, cocktails, 50, count, cocktail_des, ARRAY_SIZE(cocktail_des)), 
-};
-
-struct drink_struct drinks;
-struct ingredient_struct ingredients;
-struct cocktail_struct cocktails;
+/**
+ * Hold arrays for drinks and cocktails
+*/
+struct drink_array drinks;
+struct cocktail_array cocktails;
 
 int initialize_drinks(void){
     return json_arr_parse(drinks_JSON, sizeof(drinks_JSON), drinks_array_des, &drinks);
