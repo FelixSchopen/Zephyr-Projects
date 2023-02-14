@@ -13,6 +13,8 @@
 #include "SEGGER_RTT.h"
 
 // GPIO specs
+extern const struct gpio_dt_spec dir_spec;
+extern const struct gpio_dt_spec step_spec ;
 
 
 // Devices
