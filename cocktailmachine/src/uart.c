@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "../include/uart_communication.h"
+#include "../include/uart.h"
 
 const struct device* uart_dev = DEVICE_DT_GET(DT_NODELABEL(usart));
 

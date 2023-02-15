@@ -1,15 +1,36 @@
 / {
-    
     gpio-pins {
         compatible = "gpio-keys";
-        dir: pc10 {
+        dir_ver: pc10 {
             gpios = <&gpioc 10 GPIO_ACTIVE_HIGH>;
         };
-        step: pc11 {
+        step_ver: pc11 {
             gpios = <&gpioc 11 GPIO_ACTIVE_HIGH>;
         };
+        dir_hor: pe4 {
+            gpios = <&gpioe 4 GPIO_ACTIVE_HIGH>;
+        };
+        step_hor: pe5 {
+            gpios = <&gpioe 5 GPIO_ACTIVE_HIGH>;
+        };
     };
-
+    
+    limit-switches {
+        compatible = "gpio-keys";
+        debounce-interval-ms = <150>;
+        limit_sw_hor0: pa10{
+            gpios = <&gpioa 10 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+        };
+        limit_sw_hor1: pa11 {
+            gpios = <&gpioa 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+        };
+        limit_sw_ver0: pa14 {
+            gpios = <&gpioa 14 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+        };
+        limit_sw_ver1: pa15 {
+            gpios = <&gpioa 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+        };
+    };
 };
 
 usart: &usart3 {

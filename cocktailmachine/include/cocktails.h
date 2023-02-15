@@ -42,5 +42,8 @@ struct cocktail_array {
 extern struct drink_array drinks;
 extern struct cocktail_array cocktails;
 
+int initialize_cocktails(void);
+int initialize_drinks(void);
+
 #endif // COKTAILS
 
