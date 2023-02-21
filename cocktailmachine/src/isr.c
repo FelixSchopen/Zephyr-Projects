@@ -8,24 +8,24 @@ struct gpio_callback cb_data3;
 void isr_limit_sw_hor0(void){
     // stop motor
     // change direction?
-    SEGGER_RTT_printf("hor0\n");
+    SEGGER_RTT_printf(0, "hor0\n");
 }
 void isr_limit_sw_hor1(void){
     // stop motor 
     // change direction ? 
-    SEGGER_RTT_printf("hor1\n");
+    SEGGER_RTT_printf(0, "hor1\n");
 
 }
 void isr_limit_sw_ver0(void){
     // stop motor 
     // change direction ? 
-    SEGGER_RTT_printf("ver0\n");
+    SEGGER_RTT_printf(0, "ver0\n");
 
 }
 void isr_limit_sw_ver1(void){
     // stop motor 
     // change direction ? 
-    SEGGER_RTT_printf("ver1\n");
+    SEGGER_RTT_printf(0, "ver1\n");
 
 }
 

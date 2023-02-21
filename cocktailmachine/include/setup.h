@@ -22,6 +22,13 @@
 #define DIR_HOR_RIGHT 0
 #define DIR_HOR_LEFT 1
 
+#define POS0 1000
+#define POS1 2000
+#define POS2 3000
+#define POS3 4000
+
+extern int debug;
+
 
 /**
  * GPIOs
@@ -53,6 +60,8 @@ extern struct k_sem fill_glass_sem;
  * Queues
  */
 extern struct k_queue position_q;
+extern struct k_queue amount_q;
+
 
 
 /**

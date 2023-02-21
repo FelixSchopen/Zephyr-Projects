@@ -17,6 +17,8 @@ char cmd_idetifier[32];
 char drinks_JSON[512];
 char cocktails_JSON[2048];
 
+struct cocktail* current_cocktail = NULL;
+
 // Write string to UART 
 // unused
 void uart_write(const struct device* device, char* buf, int buf_size){
@@ -67,7 +69,6 @@ void uart_timer_cb(struct k_timer *timer_id){
         }
         else{
             SEGGER_RTT_printf(0, "Drinks updated\n");
-            uart_write(uart_dev, "Drinks initialized", sizeof("Drinks initialized"));
         }
     }
 
@@ -80,24 +81,35 @@ void uart_timer_cb(struct k_timer *timer_id){
         }  
         else{
             SEGGER_RTT_printf(0, "Cocktails updated\n");
-            uart_write(uart_dev, "Cocktails initialized", sizeof("Cocktails initialized"));
             initialized = 1;
         }      
     }
 
     else if(strcmp(cmd_idetifier, "mix") == 0){
+        uart_write(uart_dev, "block\n", sizeof("block\n"));
+
         // TODO: wake up cocktail mixing task
         char* ptr;
-        int cocktail_idx = atoi(strtok_r((char*)rx_buf, ",:", &ptr));
-        int cocktail_size = atoi(strtok_r(NULL, ",:", &ptr));
-        SEGGER_RTT_printf(0, "Mixing cocktail: %d\n", cocktail_idx);
+        int idx = atoi(strtok_r((char*)rx_buf, ",:", &ptr));
+        cocktail_size = atoi(strtok_r(NULL, ",:", &ptr));
+        SEGGER_RTT_printf(0, "Mixing cocktail: %d\n", idx);
         SEGGER_RTT_printf(0, "Drink size: %d\n", cocktail_size);
 
-        // Fill queue with positions of drinks
-        for(int i = 0; i<ARRAY_SIZE(cocktails.cocktails[cocktail_idx].ingredients); i++){
-            SEGGER_RTT_printf(0, "pos: %d\n", cocktails.cocktails[cocktail_idx].ingredients[i].drink.position);
-            k_queue_append(&position_q, &(cocktails.cocktails[cocktail_idx].ingredients[i].drink.position));
+        current_cocktail = &(cocktails.cocktails[idx]);
+
+        for (int i = 0; i < 4; i++){
+            if(current_cocktail->ingredients[i].amount > 0){
+                struct q_item* pos_item = k_malloc(sizeof(void*) + sizeof(uint16_t));
+                pos_item->data.pos = current_cocktail->ingredients[i].drink.position;
+
+                struct q_item* amount_item = k_malloc(sizeof(void*) + sizeof(uint16_t));
+                amount_item->data.amount = current_cocktail->ingredients[i].amount;
+
+                k_queue_append(&position_q, pos_item);
+                k_queue_append(&amount_q, amount_item);
+            }
         }
+
         k_sem_give(&move_to_pos_sem);
     }
 

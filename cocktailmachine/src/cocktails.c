@@ -1,5 +1,8 @@
 #include "../include/cocktails.h"
 
+struct cocktail* next_cocktail = NULL;
+int cocktail_size = 0;
+
 /**
  * JSON descriptor for drinks
  * name: string, name of the drink
