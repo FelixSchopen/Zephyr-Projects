@@ -1,5 +1,6 @@
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
+#include <zephyr/irq.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/pwm.h>
 #include <zephyr/drivers/uart.h>
@@ -17,10 +18,10 @@
 /*
  * Macros
  */
-#define DIR_VER_DOWN 0
-#define DIR_VER_UP 1
-#define DIR_HOR_RIGHT 0
-#define DIR_HOR_LEFT 1
+#define LEFT 0
+#define RIGHT 1
+#define UP 0
+#define DOWN 1
 
 #define POS0 1000
 #define POS1 2000
@@ -28,7 +29,6 @@
 #define POS3 4000
 
 extern int debug;
-
 
 /**
  * GPIOs
@@ -42,6 +42,9 @@ extern const struct gpio_dt_spec limit_sw_hor0_spec;
 extern const struct gpio_dt_spec limit_sw_hor1_spec;
 extern const struct gpio_dt_spec limit_sw_ver0_spec;
 extern const struct gpio_dt_spec limit_sw_ver1_spec;
+
+extern const struct gpio_dt_spec testpin;
+
 
 
 /**
@@ -71,6 +74,10 @@ extern char drinks_JSON[512];
 extern char cocktails_JSON[2048];
 
 extern int ready;
+
+extern int stepper_pos_hor;
+extern int stepper_pos_ver;
+
 
 
 /*

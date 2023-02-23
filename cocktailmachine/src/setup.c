@@ -19,11 +19,8 @@ const struct gpio_dt_spec step_hor_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(step_hor
 const struct gpio_dt_spec dir_ver_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(dir_ver), gpios);
 const struct gpio_dt_spec step_ver_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(step_ver), gpios);
 
-
 const struct gpio_dt_spec limit_sw_hor0_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(limit_sw_hor0), gpios);
-const struct gpio_dt_spec limit_sw_hor1_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(limit_sw_hor1), gpios);
 const struct gpio_dt_spec limit_sw_ver0_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(limit_sw_ver0), gpios);
-const struct gpio_dt_spec limit_sw_ver1_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(limit_sw_ver1), gpios);
 
 
 void setup(void){
@@ -34,12 +31,7 @@ void setup(void){
     gpio_pin_configure_dt(&step_ver_spec, GPIO_OUTPUT_INACTIVE);
 
     gpio_pin_configure_dt(&limit_sw_hor0_spec, GPIO_INPUT);
-    gpio_pin_configure_dt(&limit_sw_hor1_spec, GPIO_INPUT);
     gpio_pin_configure_dt(&limit_sw_ver0_spec, GPIO_INPUT);
-    gpio_pin_configure_dt(&limit_sw_ver1_spec, GPIO_INPUT);
-
-    gpio_pin_set_dt(&dir_hor_spec, DIR_HOR_RIGHT);
-    gpio_pin_set_dt(&dir_ver_spec, DIR_VER_DOWN);
 
 }
 

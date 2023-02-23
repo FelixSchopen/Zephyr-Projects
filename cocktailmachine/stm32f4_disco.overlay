@@ -17,18 +17,11 @@
     
     limit-switches {
         compatible = "gpio-keys";
-        debounce-interval-ms = <150>;
-        limit_sw_hor0: pa10{
-            gpios = <&gpioa 10 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+        limit_sw_hor0: pa2 {
+            gpios = <&gpioa 2 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
         };
-        limit_sw_hor1: pa11 {
-            gpios = <&gpioa 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
-        };
-        limit_sw_ver0: pa14 {
-            gpios = <&gpioa 14 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
-        };
-        limit_sw_ver1: pa15 {
-            gpios = <&gpioa 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+        limit_sw_ver0: pa3 {
+            gpios = <&gpiod 9 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
         };
     };
 };

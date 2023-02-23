@@ -7,67 +7,90 @@
 #include "../include/setup.h"
 
 int ret;
+int stepper_pos_hor = 0;
+int stepper_pos_ver = 0;
 
-int current_step_count = 0;
+void reset_positions(void){
+	// Move to starting position
+	gpio_pin_set_dt(&dir_hor_spec, LEFT);
+	gpio_pin_set_dt(&dir_ver_spec, UP);
 
+	while(1){
+		if(gpio_pin_get_dt(&limit_sw_ver0_spec) == 0){
+			gpio_pin_toggle_dt(&step_hor_spec);
+		}
+		if(gpio_pin_get_dt(&limit_sw_hor0_spec) == 0){
+			gpio_pin_toggle_dt(&step_hor_spec);
+		}
 
-void move_hor(int pos){
-
-	int target_step_count;
-
-	switch (pos) {
-		case 0:
-			target_step_count = POS0;
-			break;
-		case 1:
-			target_step_count = POS1;
-			break;
-		case 2:
-			target_step_count = POS2;
-			break;
-		case 3:
-			target_step_count = POS3;
-			break;
-		default:
-			break;
-	}
-
-	if(target_step_count > current_step_count){
-		// set direction to move right
-	}
-	else{
-		// set direction to move left
-	}
-	
-
-	for(current_step_count; current_step_count < target_step_count; current_step_count++){
-		// move motor
+		k_usleep(700);
+		
+		if(gpio_pin_get_dt(&limit_sw_ver0_spec) == 1 && gpio_pin_get_dt(&limit_sw_hor0_spec) == 1){
+			gpio_pin_set_dt(&step_hor_spec, 0);
+			gpio_pin_set_dt(&step_ver_spec, 0);
+			stepper_pos_hor = 0;
+    		stepper_pos_ver = 0;
+			return;	
+		}
 	}
 }
 
-void t_move_to_pos(void){
+void move_hor(int step_count){
+
+	if(stepper_pos_hor < step_count){
+		gpio_pin_set_dt(&dir_hor_spec, RIGHT);
+		while(stepper_pos_hor < step_count){
+			k_usleep(700);
+			stepper_pos_hor++;
+			SEGGER_RTT_printf(0, "hor pos: %d\n", stepper_pos_hor);
+		}
+	}
+	else{
+		gpio_pin_set_dt(&dir_hor_spec, LEFT);
+		while(stepper_pos_hor > step_count){
+			k_usleep(700);
+			stepper_pos_hor--;
+			SEGGER_RTT_printf(0, "hor pos: %d\n", stepper_pos_hor);
+		}
+	}
+}
+
+void t_horizontal_motor(void){
 	int pos;
 	struct q_item* item;
+	uint32_t target_step_count;
 	while(1){
 		if(k_sem_take(&move_to_pos_sem, K_MSEC(500)) == 0) {
 			SEGGER_RTT_printf(0, "Mixing cocktail...\n");
 			SEGGER_RTT_printf(0, "Cocktail: %s\n", next_cocktail->name);
 			SEGGER_RTT_printf(0, "Size: %d\n", cocktail_size);
 
-			/*for(int i = 0; i<4; i++){
-				if(next_cocktail->ingredients[i].amount <= 0){
-					continue;
-				}
-				pos = next_cocktail->ingredients[i].drink.position;
-				k_sem_give(&fill_glass_sem);
-			}*/
-
 			while(k_queue_is_empty(&position_q) == 0){
 				item = k_queue_get(&position_q, K_NO_WAIT);
 				SEGGER_RTT_printf(0, "pos: %d\n", item->data.pos);
 				SEGGER_RTT_printf(0, "moving to position...\n");
 
-				//move_hor(pos);
+				pos = item->data.pos;
+
+				switch (pos) {
+					case 0:
+						target_step_count = POS0;
+						break;
+					case 1:
+						target_step_count = POS1;
+						break;
+					case 2:
+						target_step_count = POS2;
+						break;
+					case 3:
+						target_step_count = POS3;
+						break;
+					default:
+						break;
+				}
+
+				move_hor(target_step_count);
+
 				k_sem_give(&fill_glass_sem);
 				k_sem_take(&move_to_pos_sem, K_FOREVER);
 			}
@@ -76,7 +99,7 @@ void t_move_to_pos(void){
 	}
 }
 
-void t_fill_glass(void){
+void t_vertical_motor(void){
 	uint16_t amount;
 	struct q_item* item;
 	while(1){
@@ -94,22 +117,30 @@ void t_fill_glass(void){
 	}
 }
 
-K_THREAD_DEFINE(move_to_pos, 1024, t_move_to_pos, NULL, NULL, NULL, -7, 0, -1);
-K_THREAD_DEFINE(fill_glass, 1024, t_fill_glass, NULL, NULL, NULL, -7, 0, -1);
+K_THREAD_DEFINE(horizontal_motor, 1024, t_horizontal_motor, NULL, NULL, NULL, -7, 0, -1);
+K_THREAD_DEFINE(vertical_motor, 1024, t_vertical_motor, NULL, NULL, NULL, -7, 0, -1);
 
 void main(void){
 	uart_setup();
+	setup();
+	isr_setup();
+
 	SEGGER_RTT_printf(0, "Waiting for server...\n");
 	while(!initialized){
 		uart_write(uart_dev, "init\n", sizeof("init\n"));
 		SEGGER_RTT_printf(0, "initializing...\n");
 		k_msleep(4000);
 	}
-	//setup();
+
+	reset_positions();
+
+	k_msleep(1000);
+	
+
 	SEGGER_RTT_printf(0, "Ready\n");
 
-	k_thread_start(move_to_pos);
-	k_thread_start(fill_glass);
+	k_thread_start(horizontal_motor);
+	k_thread_start(vertical_motor);
 
 	while(1){
 		SEGGER_RTT_printf(0, "Waiting for input...\n");
