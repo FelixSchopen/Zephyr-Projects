@@ -31,7 +31,6 @@ void uart_write(const struct device* device, char* buf, int buf_size){
 void rx_callback(const struct device *dev, void *user_data){
     int i = *((int*)user_data);
     if(uart_irq_rx_ready(dev)){
-
         /*  
             Restart timer every time a new character arrives.
             if no new char arrives within 50ms the timer 
@@ -49,8 +48,6 @@ void rx_callback(const struct device *dev, void *user_data){
 
 // Timer callback executes when uart reception completed
 void uart_timer_cb(struct k_timer *timer_id){
-
-    //SEGGER_RTT_printf(0, "Received: %s\n", rx_buf);
 
     // Check if valid command identifier was received
     if(strcmp(rx_buf, "drinks") == 0 || strcmp(rx_buf, "cocktails") == 0 || strcmp(rx_buf, "mix") == 0){

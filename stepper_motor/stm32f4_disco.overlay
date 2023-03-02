@@ -8,9 +8,29 @@
         step: pc11 {
             gpios = <&gpioc 11 GPIO_ACTIVE_HIGH>;
         };
-        enable: pd6 {
-            gpios = <&gpiod 6 GPIO_ACTIVE_LOW>;
+        enable: pe5 {
+            gpios = <&gpioe 5 GPIO_ACTIVE_LOW>;
+        }; 
+
+        dir2: pb6 {
+            gpios = <&gpiob 6 GPIO_ACTIVE_HIGH>;
+        };
+        step2: pb7 {
+            gpios = <&gpiob 7 GPIO_ACTIVE_HIGH>;
+        }; 
+        enable2: pb9 {
+            gpios = <&gpiob 9 GPIO_ACTIVE_LOW>;
         }; 
     };
 
+};
+
+&timers4 {
+    status = "okay";
+    st,prescaler = <30000>;
+    pwm1: pwm {
+        status = "okay";
+        pinctrl-0 = <&tim4_ch1_pd12>;
+        pinctrl-names = "default";
+    };
 };

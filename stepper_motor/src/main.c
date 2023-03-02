@@ -9,51 +9,71 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/pwm.h>
 #include <zephyr/devicetree.h>
-#include <zephyr/sys/printk.h>
 
-const struct gpio_dt_spec dir_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(dir), gpios);
-const struct gpio_dt_spec step_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(step), gpios);
-//const struct gpio_dt_spec enable_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(enable), gpios);
+#include "SEGGER_RTT_printf.c"
+
+#define DOWN 1
+#define UP 0
+#define RIGHT 1 
+#define LEFT 0
+
+const struct gpio_dt_spec dir_spec_ver = GPIO_DT_SPEC_GET(DT_NODELABEL(dir), gpios);
+const struct gpio_dt_spec step_spec_ver = GPIO_DT_SPEC_GET(DT_NODELABEL(step), gpios);
+const struct gpio_dt_spec enable_ver = GPIO_DT_SPEC_GET(DT_NODELABEL(enable), gpios);
+
+const struct gpio_dt_spec dir_spec_hor = GPIO_DT_SPEC_GET(DT_NODELABEL(dir2), gpios);
+const struct gpio_dt_spec step_spec_hor = GPIO_DT_SPEC_GET(DT_NODELABEL(step2), gpios);
+const struct gpio_dt_spec enable_hor = GPIO_DT_SPEC_GET(DT_NODELABEL(enable2), gpios);
+
+void hor_move(void){
+    gpio_pin_set_dt(&dir_spec_hor, RIGHT);
+    while (1){
+        for(int i = 0; i<4000; i++){
+            gpio_pin_set_dt(&step_spec_hor, 1);
+            k_usleep(10);
+            gpio_pin_set_dt(&step_spec_hor, 0);
+            k_usleep(10);
+            i++;
+            SEGGER_RTT_printf(0, "step count: %d\n", i);
+        }
+        gpio_pin_toggle_dt(&dir_spec_hor);
+        k_msleep(200);
+    }
+
+}
+
+void ver_move(void){
+    gpio_pin_set_dt(&dir_spec_ver, UP);
+    while (1){
+        for(int i = 0; i<2000; i++){
+            gpio_pin_set_dt(&step_spec_ver, 1);
+            k_usleep(20);
+            gpio_pin_set_dt(&step_spec_ver, 0);
+            k_usleep(20);
+            //SEGGER_RTT_printf(0, "step count: %d\n", i);
+        }
+        gpio_pin_toggle_dt(&dir_spec_ver);
+        k_msleep(200);
+    }
+}
+
+K_THREAD_DEFINE(hor_motor, 2048, hor_move, NULL, NULL, NULL, -3, 0, -1);
+K_THREAD_DEFINE(ver_motor, 2048, ver_move, NULL, NULL, NULL, -3, 0, -1);
+
 
 void main(void){
 
-    gpio_pin_configure_dt(&dir_spec, GPIO_OUTPUT_INACTIVE);
-    gpio_pin_configure_dt(&step_spec, GPIO_OUTPUT_INACTIVE);
-    //gpio_pin_configure_dt(&enable_spec, GPIO_OUTPUT_ACTIVE);
+    gpio_pin_configure_dt(&dir_spec_ver, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&step_spec_ver, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&enable_ver, GPIO_OUTPUT_ACTIVE);
 
-    gpio_pin_set_dt(&dir_spec, 0);
+    gpio_pin_configure_dt(&dir_spec_hor, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&step_spec_hor, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&enable_hor, GPIO_OUTPUT_ACTIVE);
 
-    for(int i = 0; i<200; i++){
-        gpio_pin_set_dt(&step_spec, 1);
-        k_usleep(700);
-        gpio_pin_set_dt(&step_spec, 0);
-        k_usleep(700);
-    }
+    k_msleep(500);
 
-    k_msleep(1000);
+    k_thread_start(hor_motor);
+    //k_thread_start(ver_motor);
 
-
-
-    /*while(1){
-
-        gpio_pin_set_dt(&dir_spec, 0);
-        for(int i = 0; i<200; i++){
-            gpio_pin_set_dt(&step_spec, 1);
-            k_usleep(1000);
-            gpio_pin_set_dt(&step_spec, 0);
-            k_usleep(1000);
-        }
-
-        k_msleep(1000);
-
-        gpio_pin_set_dt(&dir_spec, 1);
-        for(int i = 0; i<200; i++){
-            gpio_pin_set_dt(&step_spec, 1);
-            k_usleep(1000);
-            gpio_pin_set_dt(&step_spec, 0);
-            k_usleep(1000);
-        }
-        
-        k_msleep(1000);
-    }*/
 }

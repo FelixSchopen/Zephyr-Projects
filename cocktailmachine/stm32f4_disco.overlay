@@ -2,26 +2,26 @@
     gpio-pins {
         compatible = "gpio-keys";
         dir_ver: pc10 {
-            gpios = <&gpioc 10 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpioc 10 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
         };
         step_ver: pc11 {
-            gpios = <&gpioc 11 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpioc 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
         };
-        dir_hor: pe4 {
-            gpios = <&gpioe 4 GPIO_ACTIVE_HIGH>;
+        dir_hor: pb6 {
+            gpios = <&gpiob 6 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
         };
-        step_hor: pe5 {
-            gpios = <&gpioe 5 GPIO_ACTIVE_HIGH>;
+        step_hor: pb7 {
+            gpios = <&gpiob 7 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
         };
     };
     
     limit-switches {
         compatible = "gpio-keys";
         limit_sw_hor0: pa2 {
-            gpios = <&gpioa 2 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+            gpios = <&gpioc 7 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
         };
         limit_sw_ver0: pa3 {
-            gpios = <&gpiod 9 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+            gpios = <&gpioe 2 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
         };
     };
 };
@@ -32,4 +32,3 @@ usart: &usart3 {
 	pinctrl-names = "default";
 	current-speed = <9600>;
 };
-

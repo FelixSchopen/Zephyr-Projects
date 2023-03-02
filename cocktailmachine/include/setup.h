@@ -13,20 +13,12 @@
 #include "cocktails.h"
 #include "uart.h"
 #include "isr.h"
-
+#include "motor.h"
 
 /*
  * Macros
  */
-#define LEFT 0
-#define RIGHT 1
-#define UP 0
-#define DOWN 1
 
-#define POS0 1000
-#define POS1 2000
-#define POS2 3000
-#define POS3 4000
 
 extern int debug;
 
@@ -46,7 +38,6 @@ extern const struct gpio_dt_spec limit_sw_ver1_spec;
 extern const struct gpio_dt_spec testpin;
 
 
-
 /**
  * Devices
  */
@@ -58,6 +49,8 @@ extern const struct gpio_dt_spec testpin;
  */
 extern struct k_sem move_to_pos_sem;
 extern struct k_sem fill_glass_sem;
+extern struct k_sem uart_sem;
+
 
 /**
  * Queues
@@ -65,6 +58,11 @@ extern struct k_sem fill_glass_sem;
 extern struct k_queue position_q;
 extern struct k_queue amount_q;
 
+/**
+ * TIDs
+*/
+extern k_tid_t hor_motor;
+extern k_tid_t ver_motor;
 
 
 /**
@@ -75,12 +73,11 @@ extern char cocktails_JSON[2048];
 
 extern int ready;
 
-extern int stepper_pos_hor;
-extern int stepper_pos_ver;
-
+extern int current_pos_hor;
+extern int current_pos_ver;
 
 
 /*
- * Setup functions
+ * Functions
  */ 
 void setup(void);
