@@ -11,7 +11,6 @@
 #define ORANGE_LED_NODE DT_NODELABEL(orange_led_3)
 
 const struct gpio_dt_spec orange_led_spec = GPIO_DT_SPEC_GET(ORANGE_LED_NODE, gpios);
-const struct device* pwm_dev = DEVICE_DT_GET(DT_NODELABEL(pwm));
 
 void main(void){ 
     gpio_pin_configure_dt(&orange_led_spec, GPIO_OUTPUT_LOW);

@@ -18,7 +18,9 @@
 /*
  * Macros
  */
-
+#define STATUS_OK 0
+#define STATUS_ERROR -1
+#define STATUS_BLOCKED 1
 
 extern int debug;
 
@@ -37,6 +39,11 @@ extern const struct gpio_dt_spec limit_sw_ver1_spec;
 
 extern const struct gpio_dt_spec testpin;
 
+extern const struct gpio_dt_spec green;
+extern const struct gpio_dt_spec red ;
+extern const struct gpio_dt_spec blue;
+
+
 
 /**
  * Devices
@@ -49,7 +56,11 @@ extern const struct gpio_dt_spec testpin;
  */
 extern struct k_sem move_to_pos_sem;
 extern struct k_sem fill_glass_sem;
-extern struct k_sem uart_sem;
+extern struct k_sem drink_sem;
+extern struct k_sem cocktail_sem;
+extern struct k_sem cmd_sem;
+
+
 
 
 /**
@@ -81,3 +92,4 @@ extern int current_pos_ver;
  * Functions
  */ 
 void setup(void);
+void set_status_led(int status);

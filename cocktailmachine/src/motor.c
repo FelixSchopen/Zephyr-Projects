@@ -5,6 +5,8 @@
 int current_pos_hor;
 int current_pos_ver;
 
+int deadlock = 0;
+
 // Checks if vertical motor is at starting position
 int ver_is_starting_pos(void){
 	return gpio_pin_get_dt(&limit_sw_ver0_spec);

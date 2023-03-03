@@ -47,10 +47,15 @@ void rx_callback(const struct device *dev, void *user_data){
 }      
 
 // Timer callback executes when uart reception completed
+
 void uart_timer_cb(struct k_timer *timer_id){
+    
+    // Block server until settings operation finished
+    uart_write(uart_dev, "block\n", sizeof("block\n"));
 
     // Check if valid command identifier was received
-    if(strcmp(rx_buf, "drinks") == 0 || strcmp(rx_buf, "cocktails") == 0 || strcmp(rx_buf, "mix") == 0){
+    if(strcmp(rx_buf, "drinks") == 0 || strcmp(rx_buf, "cocktails") == 0 || strcmp(rx_buf, "mix") == 0 || strcmp(rx_buf, "cmd") == 0){
+        set_status_led(STATUS_BLOCKED);
         strncpy(cmd_idetifier, rx_buf, sizeof(cmd_idetifier));
         memset(&rx_buf[0], 0, sizeof(rx_buf));
         idx = 0;
@@ -59,32 +64,15 @@ void uart_timer_cb(struct k_timer *timer_id){
 
     if(strcmp(cmd_idetifier, "drinks") == 0){
         strncpy(drinks_JSON, rx_buf, sizeof(drinks_JSON));
-        int ret = initialize_drinks();
-        if(ret != 0){
-            SEGGER_RTT_printf(0, "\n");
-            SEGGER_RTT_printf(0, "Error while initializing drinks\n");
-        }
-        else{
-            SEGGER_RTT_printf(0, "Drinks updated\n");
-        }
+        k_sem_give(&drink_sem);
     }
 
     else if(strcmp(cmd_idetifier, "cocktails") == 0){
         strncpy(cocktails_JSON, rx_buf, sizeof(cocktails_JSON));
-        int ret = initialize_cocktails();
-        if(ret != 0){            
-            SEGGER_RTT_printf(0, "\n");
-            SEGGER_RTT_printf(0, "Error while initializing cocktails\n");        
-        }  
-        else{
-            SEGGER_RTT_printf(0, "Cocktails updated\n");
-            initialized = 1;
-        }      
+        k_sem_give(&cocktail_sem);    
     }
 
     else if(strcmp(cmd_idetifier, "mix") == 0){
-        uart_write(uart_dev, "block\n", sizeof("block\n"));
-
         // TODO: wake up cocktail mixing task
         char* ptr;
         int idx = atoi(strtok_r((char*)rx_buf, ",:", &ptr));
@@ -101,17 +89,19 @@ void uart_timer_cb(struct k_timer *timer_id){
 
                 struct q_item* amount_item = k_malloc(sizeof(void*) + sizeof(uint16_t));
                 amount_item->data.amount = current_cocktail->ingredients[i].amount;
-
                 k_queue_append(&position_q, pos_item);
                 k_queue_append(&amount_q, amount_item);
             }
         }
-
         k_sem_give(&move_to_pos_sem);
     }
 
     else if(strcmp(cmd_idetifier, "cmd") == 0){
+        set_status_led(STATUS_OK);
         // execute command, used to show real time problems
+        if(strcmp(cmd_idetifier, "deadlock") == 0){
+            deadlock = 1; 
+        }
     }
     
     // reset identifier and buffer

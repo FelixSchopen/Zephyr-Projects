@@ -47,6 +47,8 @@ void t_horizontal_motor(void){
 				k_sem_take(&move_to_pos_sem, K_FOREVER);
 			}
 			reset_positions();
+			uart_write(uart_dev, "unblock\n", sizeof("unblock\n"));
+			set_status_led(STATUS_OK);
 		}
 		k_msleep(100);
 	}
@@ -75,35 +77,65 @@ void t_vertical_motor(void){
 	}
 }
 
-/*void t_uart(void){
+void t_uart_commands(void){
 	while(1){
-		if(k_sem_take(&uart_sem, K_FOREVER) == 0){
-			
+		if(k_sem_take(&drink_sem, K_MSEC(10)) == 0){
+			if(initialize_drinks() != 0){
+				SEGGER_RTT_printf(0, "Error while initializing drinks\n");
+				set_status_led(STATUS_ERROR);
+			}
+			else{
+				SEGGER_RTT_printf(0, "Drinks updated\n");
+			}
+		}		
+		if(k_sem_take(&cocktail_sem, K_MSEC(10)) == 0){
+			if(initialize_cocktails() != 0){            
+				SEGGER_RTT_printf(0, "Error while initializing cocktails\n");   
+				set_status_led(STATUS_ERROR);
+			}
+			else{
+				if(!initialized){
+					initialized = 1;
+				}
+				SEGGER_RTT_printf(0, "Cocktails updated\n");
+				uart_write(uart_dev, "unblock\n", sizeof("unblock\n"));
+				set_status_led(STATUS_OK);
+			}  
 		}
+		k_msleep(100);
 	}
-}*/
+}
 
-K_THREAD_DEFINE(horizontal_motor, 1024, t_horizontal_motor, NULL, NULL, NULL, -7, 0, -1);
-K_THREAD_DEFINE(vertical_motor, 1024, t_vertical_motor, NULL, NULL, NULL, -7, 0, -1);
+K_THREAD_DEFINE(horizontal_motor, 2048, t_horizontal_motor, NULL, NULL, NULL, -7, 0, -1);
+K_THREAD_DEFINE(vertical_motor, 2048, t_vertical_motor, NULL, NULL, NULL, -7, 0, -1);
+K_THREAD_DEFINE(uart_commands, 2048, t_uart_commands, NULL, NULL, NULL, -7, 0, -1);
+
 
 void main(void){
 	setup();
 	uart_setup();
 	isr_setup();
 
+	set_status_led(STATUS_BLOCKED);
+	
 	while(!initialized){
+		gpio_pin_toggle_dt(&blue);
 		SEGGER_RTT_printf(0, "Waiting for server...\n");
 		uart_write(uart_dev, "init\n", sizeof("init\n"));
-		k_msleep(4000);
+		k_msleep(1000);
 	}
 
 	reset_positions();	
+	uart_write(uart_dev, "initialized\n", sizeof("initialized\n"));
 
 	k_thread_start(horizontal_motor);
 	k_thread_start(vertical_motor);
 
+	set_status_led(STATUS_OK);
+
 	while(1){
 		SEGGER_RTT_printf(0, "Waiting for input...\n");
-		k_msleep(2000);
+		k_msleep(3000);
 	}
 }
+
