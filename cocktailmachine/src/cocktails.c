@@ -1,6 +1,6 @@
 #include "../include/cocktails.h"
 
-struct cocktail* next_cocktail = NULL;
+struct cocktail* current_cocktail = NULL;
 int cocktail_size = 0;
 
 /**
@@ -33,7 +33,6 @@ static const struct json_obj_descr cocktail_des[] = {
     JSON_OBJ_DESCR_PRIM(struct cocktail, name, JSON_TOK_STRING),
     JSON_OBJ_DESCR_OBJ_ARRAY(struct cocktail, ingredients, 4, ingredient_count, ingredient_des, ARRAY_SIZE(ingredient_des)),
     JSON_OBJ_DESCR_PRIM(struct cocktail, ingredient_count, JSON_TOK_NUMBER),
-
 };
 
 /**

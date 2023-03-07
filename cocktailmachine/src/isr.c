@@ -19,9 +19,9 @@ void isr_limit_sw_ver0(void){
 void isr_limit_sw_err(void){
     k_thread_abort(hor_motor);
     k_thread_abort(ver_motor);
-    reset_positions();
+    set_starting_positions();
     k_thread_start(hor_motor);
-    k_thread_start(hor_motor);
+    k_thread_start(ver_motor);
 }
 
 void isr_setup(void){

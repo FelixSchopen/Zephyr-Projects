@@ -2,16 +2,16 @@
     gpio-pins {
         compatible = "gpio-keys";
         dir_ver: pc10 {
-            gpios = <&gpioc 10 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+            gpios = <&gpioc 10 (GPIO_ACTIVE_HIGH )>;
         };
         step_ver: pc11 {
-            gpios = <&gpioc 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+            gpios = <&gpioc 11 (GPIO_ACTIVE_HIGH )>;
         };
         dir_hor: pb6 {
-            gpios = <&gpiob 6 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+            gpios = <&gpiob 6 (GPIO_ACTIVE_HIGH )>;
         };
         step_hor: pb7 {
-            gpios = <&gpiob 7 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+            gpios = <&gpiob 7 (GPIO_ACTIVE_HIGH )>;
         };
     };
     

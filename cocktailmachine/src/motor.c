@@ -26,7 +26,7 @@ void hor_set_dir(int dir){
 }
 
 // Moves both motors to their starting position
-void reset_positions(void){
+void set_starting_positions(void){
 	ver_set_dir(UP);
     hor_set_dir(LEFT);
 	while(1){
@@ -48,11 +48,31 @@ void reset_positions(void){
 	}
 }
 
+// Moves both motors to starting positions and checks if limit switches work correctly
+int reset_and_check(void){
+	set_starting_positions();
+	ver_set_dir(DOWN);
+    hor_set_dir(RIGHT);
+	for(int i = 0; i<3000; i++){
+		gpio_pin_toggle_dt(&step_ver_spec);
+		gpio_pin_toggle_dt(&step_hor_spec);
+		k_usleep(20);
+	}
+	if(!ver_is_starting_pos() && !hor_is_starting_pos()){
+		set_starting_positions();
+		return 0;
+	}
+	return 0;
+}
+
 // Moves horizontal motor to a targetes position
 void move_to_pos(int target_pos){
 	if(current_pos_hor < target_pos){
         hor_set_dir(RIGHT);
 		while(current_pos_hor < target_pos){
+			if(deadlock){
+				access_shared_resource1();
+			}
 			gpio_pin_set_dt(&step_hor_spec, 1);
 			k_usleep(20);
 			gpio_pin_set_dt(&step_hor_spec, 0);
@@ -64,6 +84,9 @@ void move_to_pos(int target_pos){
 	else{
         hor_set_dir(LEFT);
 		while(current_pos_hor > target_pos){
+			if(deadlock){
+				access_shared_resource1();
+			}
 			gpio_pin_set_dt(&step_hor_spec, 1);
 			k_usleep(20);
 			gpio_pin_set_dt(&step_hor_spec, 0);
@@ -88,6 +111,9 @@ void fill_glass(int ml){
 		}
 		else {
 			for(int i = 0; i < FILL_POS; i++){
+				if(deadlock){
+					access_shared_resource1();
+				}
 				gpio_pin_set_dt(&step_ver_spec, 1);
 				k_usleep(20);
 				gpio_pin_set_dt(&step_ver_spec, 0);

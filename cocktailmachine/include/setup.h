@@ -8,17 +8,22 @@
 #include <string.h>
 #include <stdio.h>
 #include <zephyr/data/json.h>
+#include <zephyr/sys/reboot.h>
+
 #include "SEGGER_RTT.h"
 
 #include "cocktails.h"
 #include "uart.h"
 #include "isr.h"
 #include "motor.h"
+#include "realtimeproblems.h"
 
 /*
  * Macros
  */
-
+#define STATUS_OK 0
+#define STATUS_ERROR -1
+#define STATUS_BLOCKED 1
 
 extern int debug;
 
@@ -37,10 +42,19 @@ extern const struct gpio_dt_spec limit_sw_ver1_spec;
 
 extern const struct gpio_dt_spec testpin;
 
+extern const struct gpio_dt_spec green;
+extern const struct gpio_dt_spec red ;
+
+extern const struct gpio_dt_spec blue;
+extern const struct gpio_dt_spec orange;
+
 
 /**
  * Devices
  */
+
+//extern struct k_tid_t led; 
+
 
 // Interrupt callback data
 
@@ -49,7 +63,9 @@ extern const struct gpio_dt_spec testpin;
  */
 extern struct k_sem move_to_pos_sem;
 extern struct k_sem fill_glass_sem;
-extern struct k_sem uart_sem;
+extern struct k_sem drink_sem;
+extern struct k_sem cocktail_sem;
+extern struct k_sem cmd_sem;
 
 
 /**
@@ -61,8 +77,9 @@ extern struct k_queue amount_q;
 /**
  * TIDs
 */
-extern k_tid_t hor_motor;
-extern k_tid_t ver_motor;
+extern const k_tid_t hor_motor;
+extern const k_tid_t ver_motor;
+extern const k_tid_t led_thread;
 
 
 /**
@@ -81,3 +98,4 @@ extern int current_pos_ver;
  * Functions
  */ 
 void setup(void);
+void set_status_led(int status);
