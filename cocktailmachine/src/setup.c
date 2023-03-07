@@ -28,7 +28,9 @@ const struct gpio_dt_spec limit_sw_ver0_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(lim
 // Status LEDs
 const struct gpio_dt_spec green = GPIO_DT_SPEC_GET(DT_NODELABEL(green_led_4), gpios);
 const struct gpio_dt_spec red = GPIO_DT_SPEC_GET(DT_NODELABEL(red_led_5), gpios);
+
 const struct gpio_dt_spec blue = GPIO_DT_SPEC_GET(DT_NODELABEL(blue_led_6), gpios);
+const struct gpio_dt_spec orange = GPIO_DT_SPEC_GET(DT_NODELABEL(orange_led_3), gpios);
 
 void setup(void){
 
@@ -42,7 +44,10 @@ void setup(void){
 
     gpio_pin_configure_dt(&green, GPIO_OUTPUT_INACTIVE);    
     gpio_pin_configure_dt(&red, GPIO_OUTPUT_INACTIVE);
+    
     gpio_pin_configure_dt(&blue, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&orange, GPIO_OUTPUT_INACTIVE);
+
 
 }
 

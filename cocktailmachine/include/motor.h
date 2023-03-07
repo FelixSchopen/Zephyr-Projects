@@ -27,7 +27,9 @@ void ver_set_dir(int dir);
 
 void hor_set_dir(int dir);
 
-void reset_positions(void);
+void set_starting_positions(void);
+
+int reset_and_check(void);
 
 void move_to_pos(int target_pos);
 

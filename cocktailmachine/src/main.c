@@ -12,8 +12,11 @@ void t_horizontal_motor(void){
 	uint32_t target_step_count = 0;
 	while(1){
 		if(k_sem_take(&move_to_pos_sem, K_MSEC(500)) == 0) {
+			k_mutex_lock(&block_mutex, K_FOREVER);
+			resource++;
+			k_mutex_unlock(&block_mutex);
 			SEGGER_RTT_printf(0, "Mixing cocktail...\n");
-			SEGGER_RTT_printf(0, "Cocktail: %s\n", next_cocktail->name);
+			SEGGER_RTT_printf(0, "Cocktail: %s\n", current_cocktail->name);
 			SEGGER_RTT_printf(0, "Size: %d\n", cocktail_size);
 
 			while(k_queue_is_empty(&position_q) == 0){
@@ -37,17 +40,18 @@ void t_horizontal_motor(void){
 						target_step_count = POS3;
 						break;
 					default:
-						break;
+						set_status_led(STATUS_ERROR);
+						return;	
 				}
 
 				move_to_pos(target_step_count);
-
 				k_free(item);
+
 				k_sem_give(&fill_glass_sem);
 				k_sem_take(&move_to_pos_sem, K_FOREVER);
 			}
-			reset_positions();
-			uart_write(uart_dev, "unblock\n", sizeof("unblock\n"));
+			set_starting_positions();
+			unblock_server();
 			set_status_led(STATUS_OK);
 		}
 		k_msleep(100);
@@ -77,38 +81,32 @@ void t_vertical_motor(void){
 	}
 }
 
-void t_uart_commands(void){
+void t_led(void){
 	while(1){
-		if(k_sem_take(&drink_sem, K_MSEC(10)) == 0){
-			if(initialize_drinks() != 0){
-				SEGGER_RTT_printf(0, "Error while initializing drinks\n");
-				set_status_led(STATUS_ERROR);
-			}
-			else{
-				SEGGER_RTT_printf(0, "Drinks updated\n");
-			}
-		}		
-		if(k_sem_take(&cocktail_sem, K_MSEC(10)) == 0){
-			if(initialize_cocktails() != 0){            
-				SEGGER_RTT_printf(0, "Error while initializing cocktails\n");   
-				set_status_led(STATUS_ERROR);
-			}
-			else{
-				if(!initialized){
-					initialized = 1;
-				}
-				SEGGER_RTT_printf(0, "Cocktails updated\n");
-				uart_write(uart_dev, "unblock\n", sizeof("unblock\n"));
-				set_status_led(STATUS_OK);
-			}  
+		gpio_pin_toggle_dt(&orange);
+		access_shared_resource2();
+		k_msleep(101);
+	}
+}
+
+void t_access_resource(void){
+	while(1){
+		if(k_sem_take(&resource_sem, K_FOREVER) == 0){
+			if(k_mutex_lock(&block_mutex, K_NO_WAIT) == 0){
+				SEGGER_RTT_printf(0, "Resource blocked\n");
+				resource = 1;
+				k_msleep(10000);
+				k_mutex_unlock(&block_mutex);
+			}		
 		}
 		k_msleep(100);
 	}
 }
 
-K_THREAD_DEFINE(horizontal_motor, 2048, t_horizontal_motor, NULL, NULL, NULL, -7, 0, -1);
-K_THREAD_DEFINE(vertical_motor, 2048, t_vertical_motor, NULL, NULL, NULL, -7, 0, -1);
-K_THREAD_DEFINE(uart_commands, 2048, t_uart_commands, NULL, NULL, NULL, -7, 0, -1);
+K_THREAD_DEFINE(hor_motor, 2048, t_horizontal_motor, NULL, NULL, NULL, 4, 0, -1);
+K_THREAD_DEFINE(ver_motor, 2048, t_vertical_motor, NULL, NULL, NULL, 4, 0, -1);
+K_THREAD_DEFINE(led_thread, 2048, t_led, NULL, NULL, NULL, 5, 0, 0);
+K_THREAD_DEFINE(access_resource, 2048, t_access_resource, NULL, NULL, NULL, 8, 0, 0);
 
 
 void main(void){
@@ -119,23 +117,22 @@ void main(void){
 	set_status_led(STATUS_BLOCKED);
 	
 	while(!initialized){
-		gpio_pin_toggle_dt(&blue);
 		SEGGER_RTT_printf(0, "Waiting for server...\n");
-		uart_write(uart_dev, "init\n", sizeof("init\n"));
+		uart_write("init\n", sizeof("init\n"));
 		k_msleep(1000);
 	}
 
-	reset_positions();	
-	uart_write(uart_dev, "initialized\n", sizeof("initialized\n"));
+	if(reset_and_check() != 0){
+		set_status_led(STATUS_ERROR);
+		return; 
+	}
 
-	k_thread_start(horizontal_motor);
-	k_thread_start(vertical_motor);
-
+	k_thread_start(hor_motor);
+	k_thread_start(ver_motor);
 	set_status_led(STATUS_OK);
 
+	unblock_server();
 	while(1){
-		SEGGER_RTT_printf(0, "Waiting for input...\n");
-		k_msleep(3000);
+		k_msleep(1000);
 	}
 }
-
