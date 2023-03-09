@@ -1,34 +1,46 @@
 / {
     gpio-pins {
         compatible = "gpio-keys";
-        dir_ver: pc10 {
-            gpios = <&gpioc 10 (GPIO_ACTIVE_HIGH )>;
+        ver_step: pb5 {
+            gpios = <&gpiob 5 (GPIO_ACTIVE_HIGH )>;
         };
-        step_ver: pc11 {
-            gpios = <&gpioc 11 (GPIO_ACTIVE_HIGH )>;
-        };
-        dir_hor: pb6 {
+        ver_dir: pb6 {
             gpios = <&gpiob 6 (GPIO_ACTIVE_HIGH )>;
         };
-        step_hor: pb7 {
+        ver_enable: pb7 {
             gpios = <&gpiob 7 (GPIO_ACTIVE_HIGH )>;
+        };
+        hor_step: pb13 {
+            gpios = <&gpiob 13 (GPIO_ACTIVE_HIGH )>;
+        };
+        hor_dir: pb14 {
+            gpios = <&gpiob 14 (GPIO_ACTIVE_HIGH )>;
+        };
+        hor_enable: pb15 {
+            gpios = <&gpiob 15 (GPIO_ACTIVE_HIGH )>;
         };
     };
     
     limit-switches {
         compatible = "gpio-keys";
-        limit_sw_hor0: pa2 {
-            gpios = <&gpioc 7 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
+        ver_limit_sw0: pa5 {
+            gpios = <&gpioa 5 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
         };
-        limit_sw_ver0: pa3 {
-            gpios = <&gpioe 2 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
+        ver_limit_sw1: pa6 {
+            gpios = <&gpioa 6 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
+        };
+        hor_limit_sw0: pa8 {
+            gpios = <&gpioa 8 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
+        };
+        hor_limit_sw1: pa9 {
+            gpios = <&gpioa 9 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
         };
     };
 };
 
-usart: &usart3 {
+usart: &usart2 {
 	status = "okay";
-	pinctrl-0 = <&usart3_tx_pb10 &usart3_rx_pb11 >;
+	pinctrl-0 = <&usart2_tx_pa2 &usart2_rx_pa3 >;
 	pinctrl-names = "default";
 	current-speed = <9600>;
 };

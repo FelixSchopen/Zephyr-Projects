@@ -7,22 +7,22 @@ int current_pos_ver;
 
 // Checks if vertical motor is at starting position
 int ver_is_starting_pos(void){
-	return gpio_pin_get_dt(&limit_sw_ver0_spec);
+	return gpio_pin_get_dt(&ver_limit_sw0_spec);
 }
 
 // Checks if horizontal motor is at starting position
 int hor_is_starting_pos(void){
-	return gpio_pin_get_dt(&limit_sw_hor0_spec);
+	return gpio_pin_get_dt(&hor_limit_sw0_spec);
 }
 
 // Set direction of vertical motor
 void ver_set_dir(int dir){
-    gpio_pin_set_dt(&dir_ver_spec, dir);
+    gpio_pin_set_dt(&ver_dir_spec, dir);
 }
 
 // Set direction of horizontal motor
 void hor_set_dir(int dir){
-    gpio_pin_set_dt(&dir_hor_spec, dir);
+    gpio_pin_set_dt(&hor_dir_spec, dir);
 }
 
 // Moves both motors to their starting position
@@ -31,16 +31,16 @@ void set_starting_positions(void){
     hor_set_dir(LEFT);
 	while(1){
 		if(!ver_is_starting_pos()){
-			gpio_pin_toggle_dt(&step_ver_spec);
+			gpio_pin_toggle_dt(&ver_step_spec);
 		}
 		if(!hor_is_starting_pos()){
-			gpio_pin_toggle_dt(&step_hor_spec);
+			gpio_pin_toggle_dt(&hor_step_spec);
 		}
 		k_usleep(20);
 		
 		if(ver_is_starting_pos() && hor_is_starting_pos()){
-			gpio_pin_set_dt(&step_hor_spec, 0);
-			gpio_pin_set_dt(&step_ver_spec, 0);
+			gpio_pin_set_dt(&ver_step_spec, 0);
+			gpio_pin_set_dt(&hor_step_spec, 0);
 			current_pos_hor = 0;
     		current_pos_ver = 0;
 			return;	
@@ -54,15 +54,15 @@ int reset_and_check(void){
 	ver_set_dir(DOWN);
     hor_set_dir(RIGHT);
 	for(int i = 0; i<3000; i++){
-		gpio_pin_toggle_dt(&step_ver_spec);
-		gpio_pin_toggle_dt(&step_hor_spec);
+		gpio_pin_set_dt(&ver_step_spec, 0);
+		gpio_pin_set_dt(&hor_step_spec, 0);
 		k_usleep(20);
 	}
 	if(!ver_is_starting_pos() && !hor_is_starting_pos()){
 		set_starting_positions();
 		return 0;
 	}
-	return 0;
+	return -1;
 }
 
 // Moves horizontal motor to a targetes position
@@ -73,9 +73,9 @@ void move_to_pos(int target_pos){
 			if(deadlock){
 				access_shared_resource1();
 			}
-			gpio_pin_set_dt(&step_hor_spec, 1);
+			gpio_pin_set_dt(&hor_step_spec, 1);
 			k_usleep(20);
-			gpio_pin_set_dt(&step_hor_spec, 0);
+			gpio_pin_set_dt(&hor_step_spec, 0);
 			k_usleep(20);
 			current_pos_hor++;
 			SEGGER_RTT_printf(0, "hor pos: %d\n", current_pos_hor);
@@ -87,9 +87,9 @@ void move_to_pos(int target_pos){
 			if(deadlock){
 				access_shared_resource1();
 			}
-			gpio_pin_set_dt(&step_hor_spec, 1);
+			gpio_pin_set_dt(&hor_step_spec, 1);
 			k_usleep(20);
-			gpio_pin_set_dt(&step_hor_spec, 0);
+			gpio_pin_set_dt(&hor_step_spec, 0);
 			k_usleep(20);
 			current_pos_hor--;
 			SEGGER_RTT_printf(0, "hor pos: %d\n", current_pos_hor);
@@ -114,9 +114,9 @@ void fill_glass(int ml){
 				if(deadlock){
 					access_shared_resource1();
 				}
-				gpio_pin_set_dt(&step_ver_spec, 1);
+				gpio_pin_set_dt(&ver_step_spec, 1);
 				k_usleep(20);
-				gpio_pin_set_dt(&step_ver_spec, 0);
+				gpio_pin_set_dt(&ver_step_spec, 0);
 				k_usleep(20);
 			}
 			if(remaining_ml >= 40){
@@ -130,9 +130,9 @@ void fill_glass(int ml){
 
         ver_set_dir(UP);
 		while(!ver_is_starting_pos()){
-            gpio_pin_set_dt(&step_ver_spec, 1);
+            gpio_pin_set_dt(&ver_step_spec, 1);
             k_usleep(20);
-            gpio_pin_set_dt(&step_ver_spec, 0);
+            gpio_pin_set_dt(&ver_step_spec, 0);
             k_usleep(20);
 		}
 	}
