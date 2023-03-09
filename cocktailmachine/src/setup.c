@@ -16,13 +16,21 @@ K_QUEUE_DEFINE(position_q);
 K_QUEUE_DEFINE(amount_q);
 
 // GPIOS
-const struct gpio_dt_spec dir_hor_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(dir_hor), gpios);
-const struct gpio_dt_spec step_hor_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(step_hor), gpios);
-const struct gpio_dt_spec dir_ver_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(dir_ver), gpios);
-const struct gpio_dt_spec step_ver_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(step_ver), gpios);
+const struct gpio_dt_spec ver_step_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_step), gpios);
+const struct gpio_dt_spec ver_dir_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_dir), gpios);
+const struct gpio_dt_spec ver_enable_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_enable), gpios);
 
-const struct gpio_dt_spec limit_sw_hor0_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(limit_sw_hor0), gpios);
-const struct gpio_dt_spec limit_sw_ver0_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(limit_sw_ver0), gpios);
+const struct gpio_dt_spec hor_step_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_step), gpios);
+const struct gpio_dt_spec hor_dir_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_dir), gpios);
+const struct gpio_dt_spec hor_enable_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_enable), gpios);
+
+const struct gpio_dt_spec ver_limit_sw0_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_limit_sw0), gpios);
+const struct gpio_dt_spec ver_limit_sw1_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_limit_sw1), gpios);
+
+const struct gpio_dt_spec hor_limit_sw0_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_limit_sw0), gpios);
+const struct gpio_dt_spec hor_limit_sw1_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_limit_sw1), gpios);
+
+
 
 
 // Status LEDs
@@ -34,13 +42,13 @@ const struct gpio_dt_spec orange = GPIO_DT_SPEC_GET(DT_NODELABEL(orange_led_3), 
 
 void setup(void){
 
-    gpio_pin_configure_dt(&dir_hor_spec, GPIO_OUTPUT_INACTIVE);
-    gpio_pin_configure_dt(&step_hor_spec, GPIO_OUTPUT_INACTIVE);
-    gpio_pin_configure_dt(&dir_ver_spec, GPIO_OUTPUT_INACTIVE);
-    gpio_pin_configure_dt(&step_ver_spec, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&hor_dir_spec, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&hor_step_spec, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&ver_dir_spec, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&ver_step_spec, GPIO_OUTPUT_INACTIVE);
 
-    gpio_pin_configure_dt(&limit_sw_hor0_spec, GPIO_INPUT);
-    gpio_pin_configure_dt(&limit_sw_ver0_spec, GPIO_INPUT);
+    gpio_pin_configure_dt(&hor_limit_sw0_spec, GPIO_INPUT);
+    gpio_pin_configure_dt(&ver_limit_sw0_spec, GPIO_INPUT);
 
     gpio_pin_configure_dt(&green, GPIO_OUTPUT_INACTIVE);    
     gpio_pin_configure_dt(&red, GPIO_OUTPUT_INACTIVE);

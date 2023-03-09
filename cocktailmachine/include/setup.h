@@ -30,14 +30,14 @@ extern int debug;
 /**
  * GPIOs
  */ 
-extern const struct gpio_dt_spec dir_hor_spec;
-extern const struct gpio_dt_spec step_hor_spec;
-extern const struct gpio_dt_spec dir_ver_spec;
-extern const struct gpio_dt_spec step_ver_spec;
+extern const struct gpio_dt_spec hor_dir_spec;
+extern const struct gpio_dt_spec hor_step_spec;
+extern const struct gpio_dt_spec ver_dir_spec;
+extern const struct gpio_dt_spec ver_step_spec;
 
-extern const struct gpio_dt_spec limit_sw_hor0_spec;
+extern const struct gpio_dt_spec hor_limit_sw0_spec;
 extern const struct gpio_dt_spec limit_sw_hor1_spec;
-extern const struct gpio_dt_spec limit_sw_ver0_spec;
+extern const struct gpio_dt_spec ver_limit_sw0_spec;
 extern const struct gpio_dt_spec limit_sw_ver1_spec;
 
 extern const struct gpio_dt_spec testpin;
