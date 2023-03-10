@@ -25,10 +25,10 @@ const struct gpio_dt_spec hor_dir_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_dir),
 const struct gpio_dt_spec hor_enable_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_enable), gpios);
 
 const struct gpio_dt_spec ver_limit_sw0_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_limit_sw0), gpios);
-const struct gpio_dt_spec ver_limit_sw1_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_limit_sw1), gpios);
+//const struct gpio_dt_spec ver_limit_sw1_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_limit_sw1), gpios);
 
 const struct gpio_dt_spec hor_limit_sw0_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_limit_sw0), gpios);
-const struct gpio_dt_spec hor_limit_sw1_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_limit_sw1), gpios);
+//const struct gpio_dt_spec hor_limit_sw1_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_limit_sw1), gpios);
 
 
 
@@ -44,8 +44,12 @@ void setup(void){
 
     gpio_pin_configure_dt(&hor_dir_spec, GPIO_OUTPUT_INACTIVE);
     gpio_pin_configure_dt(&hor_step_spec, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&hor_enable_spec, GPIO_OUTPUT_ACTIVE);
+
     gpio_pin_configure_dt(&ver_dir_spec, GPIO_OUTPUT_INACTIVE);
     gpio_pin_configure_dt(&ver_step_spec, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&ver_enable_spec, GPIO_OUTPUT_ACTIVE);
+
 
     gpio_pin_configure_dt(&hor_limit_sw0_spec, GPIO_INPUT);
     gpio_pin_configure_dt(&ver_limit_sw0_spec, GPIO_INPUT);

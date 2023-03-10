@@ -30,8 +30,11 @@ void set_starting_positions(void){
 	ver_set_dir(UP);
     hor_set_dir(LEFT);
 	while(1){
+		SEGGER_RTT_printf(0, "%d\n", ver_is_starting_pos());
+		SEGGER_RTT_printf(0, "%d\n", hor_is_starting_pos());
 		if(!ver_is_starting_pos()){
 			gpio_pin_toggle_dt(&ver_step_spec);
+			SEGGER_RTT_printf(0, "moving\n");
 		}
 		if(!hor_is_starting_pos()){
 			gpio_pin_toggle_dt(&hor_step_spec);
@@ -54,8 +57,8 @@ int reset_and_check(void){
 	ver_set_dir(DOWN);
     hor_set_dir(RIGHT);
 	for(int i = 0; i<3000; i++){
-		gpio_pin_set_dt(&ver_step_spec, 0);
-		gpio_pin_set_dt(&hor_step_spec, 0);
+		gpio_pin_toggle_dt(&ver_step_spec);
+		gpio_pin_toggle_dt(&hor_step_spec);
 		k_usleep(20);
 	}
 	if(!ver_is_starting_pos() && !hor_is_starting_pos()){

@@ -83,7 +83,7 @@ void t_vertical_motor(void){
 
 void t_led(void){
 	while(1){
-		gpio_pin_toggle_dt(&orange);
+		//gpio_pin_toggle_dt(&orange);
 		access_shared_resource2();
 		k_msleep(101);
 	}
@@ -115,15 +115,20 @@ void main(void){
 	isr_setup();
 
 	set_status_led(STATUS_BLOCKED);
-	
+
+	SEGGER_RTT_printf(0, "%d\n", ver_is_starting_pos());
+	SEGGER_RTT_printf(0, "%d\n", hor_is_starting_pos());
+
 	while(!initialized){
 		SEGGER_RTT_printf(0, "Waiting for server...\n");
 		uart_write("init\n", sizeof("init\n"));
 		k_msleep(1000);
 	}
 
+
 	if(reset_and_check() != 0){
 		set_status_led(STATUS_ERROR);
+		SEGGER_RTT_printf(0, "Limit switch broken\n");
 		return; 
 	}
 

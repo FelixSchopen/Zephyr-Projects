@@ -26,20 +26,19 @@ const struct gpio_dt_spec step_spec_hor = GPIO_DT_SPEC_GET(DT_NODELABEL(step2), 
 const struct gpio_dt_spec enable_hor = GPIO_DT_SPEC_GET(DT_NODELABEL(enable2), gpios);
 
 void hor_move(void){
-    gpio_pin_set_dt(&dir_spec_hor, RIGHT);
+    gpio_pin_set_dt(&dir_spec_hor, LEFT);
     while (1){
-        for(int i = 0; i<4000; i++){
+        for(int i = 0; i<10000; i++){
             gpio_pin_set_dt(&step_spec_hor, 1);
-            k_usleep(10);
+            k_usleep(900);
             gpio_pin_set_dt(&step_spec_hor, 0);
-            k_usleep(10);
+            k_usleep(900);
             i++;
             SEGGER_RTT_printf(0, "step count: %d\n", i);
         }
         gpio_pin_toggle_dt(&dir_spec_hor);
-        k_msleep(200);
+        k_msleep(2000);
     }
-
 }
 
 void ver_move(void){

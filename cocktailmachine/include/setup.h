@@ -40,6 +40,10 @@ extern const struct gpio_dt_spec limit_sw_hor1_spec;
 extern const struct gpio_dt_spec ver_limit_sw0_spec;
 extern const struct gpio_dt_spec limit_sw_ver1_spec;
 
+extern const struct gpio_dt_spec ver_enable_spec;
+extern const struct gpio_dt_spec hor_enable_spec;
+ 
+
 extern const struct gpio_dt_spec testpin;
 
 extern const struct gpio_dt_spec green;
