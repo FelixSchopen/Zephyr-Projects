@@ -11,10 +11,10 @@
 #define RIGHT 1 
 #define LEFT 0
 
-#define POS0 65200
-#define POS1 106500
-#define POS2 14600
-#define POS3 186000
+#define POS0 8000
+#define POS1 13300
+#define POS2 18200
+#define POS3 23100
 
 #define FILL_POS 20000
 #define FILL_TIME_MS 1000 
