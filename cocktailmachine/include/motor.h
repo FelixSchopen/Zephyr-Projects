@@ -19,6 +19,9 @@
 #define FILL_POS 20000
 #define FILL_TIME_MS 1000 
 
+#define VER_STEP_DELAY 20
+#define HOR_STEP_DELAY 900
+
 int ver_is_starting_pos(void);
 
 int hor_is_starting_pos(void);
@@ -27,9 +30,15 @@ void ver_set_dir(int dir);
 
 void hor_set_dir(int dir);
 
-void set_starting_positions(void);
+void ver_move_step(void);
 
-int reset_and_check(void);
+void hor_move_step(void);
+
+void ver_set_starting_position(void);
+
+void hor_set_starting_position(void);
+
+void reset_and_check(void);
 
 void move_to_pos(int target_pos);
 

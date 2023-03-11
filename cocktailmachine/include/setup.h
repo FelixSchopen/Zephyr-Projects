@@ -42,13 +42,11 @@ extern const struct gpio_dt_spec limit_sw_ver1_spec;
 
 extern const struct gpio_dt_spec ver_enable_spec;
 extern const struct gpio_dt_spec hor_enable_spec;
+extern const struct gpio_dt_spec user_button_spec;
  
-
-extern const struct gpio_dt_spec testpin;
-
+// LEDs
 extern const struct gpio_dt_spec green;
 extern const struct gpio_dt_spec red ;
-
 extern const struct gpio_dt_spec blue;
 extern const struct gpio_dt_spec orange;
 
@@ -57,19 +55,22 @@ extern const struct gpio_dt_spec orange;
  * Devices
  */
 
-//extern struct k_tid_t led; 
-
-
-// Interrupt callback data
 
 /**
  * Semaphores
  */
+// Coktail filling semeaphores
 extern struct k_sem move_to_pos_sem;
 extern struct k_sem fill_glass_sem;
+
+// Settings semaphores
 extern struct k_sem drink_sem;
 extern struct k_sem cocktail_sem;
 extern struct k_sem cmd_sem;
+
+// Initialization semaphores
+extern struct k_sem init_ver;
+extern struct k_sem init_hor;
 
 
 /**
@@ -94,8 +95,8 @@ extern char cocktails_JSON[2048];
 
 extern int ready;
 
-extern int current_pos_hor;
-extern int current_pos_ver;
+extern int hor_current_pos;
+extern int ver_current_pos;
 
 
 /*

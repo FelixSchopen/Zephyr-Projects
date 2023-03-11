@@ -10,6 +10,7 @@
         };
         enable: pe5 {
             gpios = <&gpiod 13 GPIO_ACTIVE_LOW>;
+            //change
         }; 
 
         dir2: pb6 {

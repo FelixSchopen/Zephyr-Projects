@@ -37,7 +37,7 @@ void access_shared_resource1(void){
 
 
 void access_shared_resource2(void){
-    // Try to lock mutex1
+    // Try to lock mutex2
     while(k_mutex_lock(&my_mutex2, K_NO_WAIT) != 0) {
         k_usleep(0.9);
         if(deadlock == 0){
@@ -45,7 +45,7 @@ void access_shared_resource2(void){
         }
     } 
     k_usleep(0.9);  
-    // Try to lock mutex2
+    // Try to lock mutex1
     while(k_mutex_lock(&my_mutex1, K_NO_WAIT) != 0){
         k_usleep(0.9);
         if(deadlock == 0){

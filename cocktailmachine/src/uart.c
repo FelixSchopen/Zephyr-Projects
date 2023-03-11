@@ -100,6 +100,13 @@ void uart_timer_cb(struct k_timer *timer_id){
 
         current_cocktail = &(cocktails.cocktails[idx]);
 
+        while(!k_queue_is_empty(&position_q)){
+            k_free(k_queue_get(&position_q, K_NO_WAIT));
+        }
+        if(!k_queue_is_empty(&amount_q)){
+            k_free(k_queue_get(&amount_q, K_NO_WAIT));
+        }
+
         for (int i = 0; i < 4; i++){
             if(current_cocktail->ingredients[i].amount > 0){
                 struct q_item* pos_item = k_malloc(sizeof(void*) + sizeof(uint16_t));
@@ -107,6 +114,7 @@ void uart_timer_cb(struct k_timer *timer_id){
 
                 struct q_item* amount_item = k_malloc(sizeof(void*) + sizeof(uint16_t));
                 amount_item->data.amount = current_cocktail->ingredients[i].amount;
+
                 k_queue_append(&position_q, pos_item);
                 k_queue_append(&amount_q, amount_item);
             }

@@ -6,24 +6,21 @@
 
 #include "../include/setup.h"
 
+int limit_switch_error = 0;
+
 void t_horizontal_motor(void){
 	int pos;
 	struct q_item* item;
 	uint32_t target_step_count = 0;
 	while(1){
 		if(k_sem_take(&move_to_pos_sem, K_MSEC(500)) == 0) {
+			
 			k_mutex_lock(&block_mutex, K_FOREVER);
 			resource++;
 			k_mutex_unlock(&block_mutex);
-			SEGGER_RTT_printf(0, "Mixing cocktail...\n");
-			SEGGER_RTT_printf(0, "Cocktail: %s\n", current_cocktail->name);
-			SEGGER_RTT_printf(0, "Size: %d\n", cocktail_size);
 
 			while(k_queue_is_empty(&position_q) == 0){
 				item = k_queue_get(&position_q, K_NO_WAIT);
-				SEGGER_RTT_printf(0, "pos: %d\n", item->data.pos);
-				SEGGER_RTT_printf(0, "moving to position...\n");
-
 				pos = item->data.pos;
 
 				switch (pos) {
@@ -50,7 +47,7 @@ void t_horizontal_motor(void){
 				k_sem_give(&fill_glass_sem);
 				k_sem_take(&move_to_pos_sem, K_FOREVER);
 			}
-			set_starting_positions();
+			hor_set_starting_position();
 			unblock_server();
 			set_status_led(STATUS_OK);
 		}
@@ -103,10 +100,51 @@ void t_access_resource(void){
 	}
 }
 
+void t_init_ver_motor(void){
+	while(k_sem_take(&init_ver, K_FOREVER)){
+		ver_set_starting_position();
+		if(ver_is_starting_pos() && hor_is_starting_pos()){
+			ver_set_dir(DOWN);
+			for(int i = 0; i<3000; i++){
+				ver_move_step();
+			}
+			if(!ver_is_starting_pos()){
+				ver_set_starting_position();
+			}
+			else {
+				limit_switch_error = 1;
+			}
+		}
+		k_msleep(1000);
+	}
+}
+
+void t_init_hor_motor(void){
+	while(k_sem_take(&init_hor, K_FOREVER)){
+		hor_set_starting_position();
+		if(ver_is_starting_pos() && hor_is_starting_pos()){
+			hor_set_dir(RIGHT);
+			for(int i = 0; i<500; i++){
+				hor_move_step();
+			}
+			if(!hor_is_starting_pos()){
+				hor_set_starting_position();
+			}
+			else {
+				limit_switch_error = 1;
+			}
+		}
+		k_msleep(1000);
+	}
+}
+
 K_THREAD_DEFINE(hor_motor, 2048, t_horizontal_motor, NULL, NULL, NULL, 4, 0, -1);
 K_THREAD_DEFINE(ver_motor, 2048, t_vertical_motor, NULL, NULL, NULL, 4, 0, -1);
 K_THREAD_DEFINE(led_thread, 2048, t_led, NULL, NULL, NULL, 5, 0, 0);
 K_THREAD_DEFINE(access_resource, 2048, t_access_resource, NULL, NULL, NULL, 8, 0, 0);
+K_THREAD_DEFINE(init_ver_motor, 2048, t_init_ver_motor, NULL, NULL, NULL, 1, 0, 0);
+K_THREAD_DEFINE(init_hor_motor, 2048, t_init_hor_motor, NULL, NULL, NULL, 1, 0, 0);
+
 
 
 void main(void){
@@ -122,21 +160,23 @@ void main(void){
 	while(!initialized){
 		SEGGER_RTT_printf(0, "Waiting for server...\n");
 		uart_write("init\n", sizeof("init\n"));
-		k_msleep(1000);
+		k_msleep(2000);
 	}
 
+	reset_and_check();
 
-	if(reset_and_check() != 0){
+	if(limit_switch_error){
 		set_status_led(STATUS_ERROR);
-		SEGGER_RTT_printf(0, "Limit switch broken\n");
-		return; 
+		SEGGER_RTT_printf(0, "Limit switches not working properly\n");
+		return;
 	}
 
 	k_thread_start(hor_motor);
 	k_thread_start(ver_motor);
+	unblock_server();
+
 	set_status_led(STATUS_OK);
 
-	unblock_server();
 	while(1){
 		k_msleep(1000);
 	}

@@ -2,8 +2,8 @@
 
 // Variables that hold the position of the motors
 // Position is a counter of the steps
-int current_pos_hor;
-int current_pos_ver;
+int hor_current_pos;
+int ver_current_pos;
 
 // Checks if vertical motor is at starting position
 int ver_is_starting_pos(void){
@@ -25,77 +25,67 @@ void hor_set_dir(int dir){
     gpio_pin_set_dt(&hor_dir_spec, dir);
 }
 
-// Moves both motors to their starting position
-void set_starting_positions(void){
-	ver_set_dir(UP);
-    hor_set_dir(LEFT);
-	while(1){
-		SEGGER_RTT_printf(0, "%d\n", ver_is_starting_pos());
-		SEGGER_RTT_printf(0, "%d\n", hor_is_starting_pos());
-		if(!ver_is_starting_pos()){
-			gpio_pin_toggle_dt(&ver_step_spec);
-			SEGGER_RTT_printf(0, "moving\n");
-		}
-		if(!hor_is_starting_pos()){
-			gpio_pin_toggle_dt(&hor_step_spec);
-		}
-		k_usleep(20);
-		
-		if(ver_is_starting_pos() && hor_is_starting_pos()){
-			gpio_pin_set_dt(&ver_step_spec, 0);
-			gpio_pin_set_dt(&hor_step_spec, 0);
-			current_pos_hor = 0;
-    		current_pos_ver = 0;
-			return;	
-		}
+void ver_move_step(void){
+	gpio_pin_toggle_dt(&ver_step_spec);
+	k_usleep(VER_STEP_DELAY);
+	gpio_pin_toggle_dt(&ver_step_spec);
+	k_usleep(VER_STEP_DELAY);
+	if(deadlock){
+		access_shared_resource1();
 	}
 }
 
+void hor_move_step(void){
+	gpio_pin_toggle_dt(&hor_step_spec);
+	k_usleep(HOR_STEP_DELAY);
+	gpio_pin_toggle_dt(&hor_step_spec);
+	k_usleep(HOR_STEP_DELAY);
+	if(deadlock){
+		access_shared_resource1();
+	}
+}
+
+// Moves hor motor to starting position
+void hor_set_starting_position(void){
+    hor_set_dir(LEFT);
+	while(!hor_is_starting_pos()){
+		hor_move_step();
+	}
+	gpio_pin_set_dt(&hor_step_spec, 0);
+	hor_current_pos = 0;
+}
+
+void ver_set_starting_position(void){
+	ver_set_dir(UP);
+	while(!ver_is_starting_pos()){
+		ver_move_step();
+	}
+	gpio_pin_set_dt(&ver_step_spec, 0);
+	ver_current_pos = 0;
+}
+
 // Moves both motors to starting positions and checks if limit switches work correctly
-int reset_and_check(void){
-	set_starting_positions();
-	ver_set_dir(DOWN);
-    hor_set_dir(RIGHT);
-	for(int i = 0; i<3000; i++){
-		gpio_pin_toggle_dt(&ver_step_spec);
-		gpio_pin_toggle_dt(&hor_step_spec);
-		k_usleep(20);
-	}
-	if(!ver_is_starting_pos() && !hor_is_starting_pos()){
-		set_starting_positions();
-		return 0;
-	}
-	return -1;
+void reset_and_check(void){
+	k_sem_give(&init_ver);
+	k_sem_give(&init_hor);
 }
 
 // Moves horizontal motor to a targetes position
 void move_to_pos(int target_pos){
-	if(current_pos_hor < target_pos){
+	if(hor_current_pos < target_pos){
         hor_set_dir(RIGHT);
-		while(current_pos_hor < target_pos){
-			if(deadlock){
-				access_shared_resource1();
-			}
-			gpio_pin_set_dt(&hor_step_spec, 1);
-			k_usleep(20);
-			gpio_pin_set_dt(&hor_step_spec, 0);
-			k_usleep(20);
-			current_pos_hor++;
-			SEGGER_RTT_printf(0, "hor pos: %d\n", current_pos_hor);
+		while(hor_current_pos < target_pos){
+			hor_move_step();
+			hor_current_pos++;
+			SEGGER_RTT_printf(0, "hor pos: %d\n", hor_current_pos);
 		}
 	}
 	else{
         hor_set_dir(LEFT);
-		while(current_pos_hor > target_pos){
-			if(deadlock){
-				access_shared_resource1();
-			}
-			gpio_pin_set_dt(&hor_step_spec, 1);
-			k_usleep(20);
-			gpio_pin_set_dt(&hor_step_spec, 0);
-			k_usleep(20);
-			current_pos_hor--;
-			SEGGER_RTT_printf(0, "hor pos: %d\n", current_pos_hor);
+		while(hor_current_pos > target_pos){
+			hor_move_step();
+			hor_current_pos--;
+			SEGGER_RTT_printf(0, "hor pos: %d\n", hor_current_pos);
 		}
 	}
 }
@@ -104,40 +94,47 @@ void move_to_pos(int target_pos){
 // repeatedly moving the vertical motor up and down 
 void fill_glass(int ml){
 	int remaining_ml = ml;
+	int next_fill_pos;
+	int next_fill_time;
+
 	while(1){
-        ver_set_dir(DOWN);
 		if(remaining_ml == 0){
 			return;
 		}
-		if(remaining_ml < 20){
-			// do nothing, prevent glass from over filling
+
+		ver_set_dir(DOWN);
+		next_fill_pos = FILL_POS;
+		next_fill_time = FILL_TIME_MS;
+
+		if(remaining_ml < 10){
+			next_fill_pos -= 6000;
+			next_fill_time = 0;
 		}
-		else {
-			for(int i = 0; i < FILL_POS; i++){
-				if(deadlock){
-					access_shared_resource1();
-				}
-				gpio_pin_set_dt(&ver_step_spec, 1);
-				k_usleep(20);
-				gpio_pin_set_dt(&ver_step_spec, 0);
-				k_usleep(20);
-			}
-			if(remaining_ml >= 40){
-				k_msleep(FILL_TIME_MS);
-				remaining_ml -= 40;
-			}
-			else {
-				remaining_ml = 0;
-			}
+		else if(remaining_ml < 20){
+			next_fill_pos -= 4000;
+			next_fill_time = 0;
+		}
+		else if (remaining_ml < 30){
+			next_fill_pos -= 2000;
+			next_fill_time = 0;
+		}
+		else if (remaining_ml < 40){
+			next_fill_time = 0;
 		}
 
-        ver_set_dir(UP);
-		while(!ver_is_starting_pos()){
-            gpio_pin_set_dt(&ver_step_spec, 1);
-            k_usleep(20);
-            gpio_pin_set_dt(&ver_step_spec, 0);
-            k_usleep(20);
+		for(int i = 0; i < next_fill_pos; i++){
+			ver_move_step();
 		}
+		k_msleep(next_fill_time);
+
+		if(remaining_ml >= 40){
+			remaining_ml -= 40;
+		}
+		else {
+			remaining_ml = 0;
+		}
+
+		ver_set_starting_position();
 	}
 }
 

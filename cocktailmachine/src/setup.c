@@ -10,6 +10,8 @@ K_SEM_DEFINE(move_to_pos_sem, 0, 1);
 K_SEM_DEFINE(fill_glass_sem, 0, 1);
 K_SEM_DEFINE(drink_sem, 0, 1);
 K_SEM_DEFINE(cocktail_sem, 0, 1);
+K_SEM_DEFINE(init_ver, 0, 1);
+K_SEM_DEFINE(init_hor, 0, 1);
 
 // Queue
 K_QUEUE_DEFINE(position_q);
@@ -25,10 +27,8 @@ const struct gpio_dt_spec hor_dir_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_dir),
 const struct gpio_dt_spec hor_enable_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_enable), gpios);
 
 const struct gpio_dt_spec ver_limit_sw0_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_limit_sw0), gpios);
-//const struct gpio_dt_spec ver_limit_sw1_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_limit_sw1), gpios);
-
 const struct gpio_dt_spec hor_limit_sw0_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_limit_sw0), gpios);
-//const struct gpio_dt_spec hor_limit_sw1_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_limit_sw1), gpios);
+const struct gpio_dt_spec user_button_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(user_button), gpios);
 
 
 
@@ -53,6 +53,8 @@ void setup(void){
 
     gpio_pin_configure_dt(&hor_limit_sw0_spec, GPIO_INPUT);
     gpio_pin_configure_dt(&ver_limit_sw0_spec, GPIO_INPUT);
+    gpio_pin_configure_dt(&user_button_spec, GPIO_INPUT);
+
 
     gpio_pin_configure_dt(&green, GPIO_OUTPUT_INACTIVE);    
     gpio_pin_configure_dt(&red, GPIO_OUTPUT_INACTIVE);
