@@ -104,3 +104,4 @@ extern int ver_current_pos;
  */ 
 void setup(void);
 void set_status_led(int status);
+void halt(char* msg);

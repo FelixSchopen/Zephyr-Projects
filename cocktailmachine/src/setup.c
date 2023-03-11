@@ -89,3 +89,9 @@ void set_status_led(int status){
     }
 }
 
+void halt(char* msg){
+    set_status_led(STATUS_ERROR);
+    SEGGER_RTT_printf(0, "Error: %s\n", msg);
+    k_panic();
+}
+

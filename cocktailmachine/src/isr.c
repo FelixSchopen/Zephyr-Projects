@@ -18,7 +18,7 @@ void isr_ver_limit_sw0(void){
 
 void isr_user_button(){
     SEGGER_RTT_printf(0, "user button\n");
-    //k_panic();
+    halt("user aborted");
 }
 
 void isr_setup(void){

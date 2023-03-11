@@ -69,16 +69,12 @@ void uart_timer_cb(struct k_timer *timer_id){
         strncpy(cocktails_JSON, rx_buf, sizeof(cocktails_JSON));
         if(update_drinks){
             if(initialize_drinks() != 0){
-                SEGGER_RTT_printf(0, "Error while initializing drinks\n");
-                set_status_led(STATUS_ERROR);
-                return;
+                halt("drink initialization");
             }  
             update_drinks = 0;
         }
         if(initialize_cocktails() != 0){            
-            SEGGER_RTT_printf(0, "Error while initializing cocktails\n");   
-            set_status_led(STATUS_ERROR);
-            return;
+            halt("cocktail initialization");
         }
         if(!initialized){
             initialized = 1;
