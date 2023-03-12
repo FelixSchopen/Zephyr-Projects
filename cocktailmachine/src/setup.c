@@ -3,7 +3,6 @@
 int debug = 1;
 
 // Basic Variables
-int ready = 0;
 
 // Semaphores
 K_SEM_DEFINE(move_to_pos_sem, 0, 1);
@@ -20,11 +19,11 @@ K_QUEUE_DEFINE(amount_q);
 // GPIOS
 const struct gpio_dt_spec ver_step_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_step), gpios);
 const struct gpio_dt_spec ver_dir_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_dir), gpios);
-const struct gpio_dt_spec ver_enable_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_enable), gpios);
+//const struct gpio_dt_spec ver_enable_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_enable), gpios);
 
 const struct gpio_dt_spec hor_step_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_step), gpios);
 const struct gpio_dt_spec hor_dir_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_dir), gpios);
-const struct gpio_dt_spec hor_enable_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_enable), gpios);
+//const struct gpio_dt_spec hor_enable_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_enable), gpios);
 
 const struct gpio_dt_spec ver_limit_sw0_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(ver_limit_sw0), gpios);
 const struct gpio_dt_spec hor_limit_sw0_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(hor_limit_sw0), gpios);
@@ -44,11 +43,11 @@ void setup(void){
 
     gpio_pin_configure_dt(&hor_dir_spec, GPIO_OUTPUT_INACTIVE);
     gpio_pin_configure_dt(&hor_step_spec, GPIO_OUTPUT_INACTIVE);
-    gpio_pin_configure_dt(&hor_enable_spec, GPIO_OUTPUT_ACTIVE);
+    //gpio_pin_configure_dt(&hor_enable_spec, GPIO_OUTPUT_ACTIVE);
 
     gpio_pin_configure_dt(&ver_dir_spec, GPIO_OUTPUT_INACTIVE);
     gpio_pin_configure_dt(&ver_step_spec, GPIO_OUTPUT_INACTIVE);
-    gpio_pin_configure_dt(&ver_enable_spec, GPIO_OUTPUT_ACTIVE);
+    //gpio_pin_configure_dt(&ver_enable_spec, GPIO_OUTPUT_ACTIVE);
 
 
     gpio_pin_configure_dt(&hor_limit_sw0_spec, GPIO_INPUT);

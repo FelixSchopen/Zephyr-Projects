@@ -6,15 +6,18 @@
 
 #include "../include/setup.h"
 
-int limit_switch_error = 0;
+int ver_ready = 0;
+int hor_ready = 0;
 
-void t_horizontal_motor(void)
-{
+void t_horizontal_motor(void){
 	int pos;
 	struct q_item *item;
 	uint32_t target_step_count = 0;
 	while (1) {
 		if (k_sem_take(&move_to_pos_sem, K_MSEC(500)) == 0) {
+
+			ver_ready = 0;
+			hor_ready = 0;
 
 			k_mutex_lock(&block_mutex, K_FOREVER);
 			resource++;
@@ -48,7 +51,11 @@ void t_horizontal_motor(void)
 				k_sem_give(&fill_glass_sem);
 				k_sem_take(&move_to_pos_sem, K_FOREVER);
 			}
-			hor_set_starting_position();
+			reset_and_check();
+
+			while(!ver_ready || !hor_ready){
+				k_msleep(10);
+			}
 			unblock_server();
 			set_status_led(STATUS_OK);
 		}
@@ -56,8 +63,7 @@ void t_horizontal_motor(void)
 	}
 }
 
-void t_vertical_motor(void)
-{
+void t_vertical_motor(void){
 	uint16_t amount;
 	struct q_item *item;
 	while (1) {
@@ -69,7 +75,8 @@ void t_vertical_motor(void)
 				SEGGER_RTT_printf(0, "amount: %dml\n", item->data.amount);
 				SEGGER_RTT_printf(0, "filling glass...\n");
 
-				fill_glass(amount);
+				k_msleep(2000);
+				//fill_glass(amount);
 
 				k_free(item);
 				k_sem_give(&move_to_pos_sem);
@@ -80,19 +87,17 @@ void t_vertical_motor(void)
 	}
 }
 
-void t_led(void)
-{
+void t_led(void){
 	while (1) {
-		// gpio_pin_toggle_dt(&orange);
+		gpio_pin_toggle_dt(&orange);
 		access_shared_resource2();
 		k_msleep(101);
 	}
 }
 
-void t_access_resource(void)
-{
+void t_access_resource(void){
 	while (1) {
-		if (k_sem_take(&resource_sem, K_FOREVER) == 0) {
+		if(k_sem_take(&resource_sem, K_FOREVER) == 0) {
 			if (k_mutex_lock(&block_mutex, K_NO_WAIT) == 0) {
 				SEGGER_RTT_printf(0, "Resource blocked\n");
 				resource = 1;
@@ -104,17 +109,21 @@ void t_access_resource(void)
 	}
 }
 
-void t_init_ver_motor(void)
-{
-	while (k_sem_take(&init_ver, K_FOREVER)) {
-		ver_set_starting_position();
-		if (ver_is_starting_pos() && hor_is_starting_pos()) {
+void t_init_ver_motor(void){
+	while(1){
+		if(k_sem_take(&init_ver, K_FOREVER) == 0) {
+			ver_set_starting_position();
+			while(!ver_is_starting_pos() || !hor_is_starting_pos()) {
+				k_msleep(10);
+			}
 			ver_set_dir(DOWN);
 			for (int i = 0; i < 3000; i++) {
 				ver_move_step();
 			}
 			if (!ver_is_starting_pos()) {
+				k_msleep(200);
 				ver_set_starting_position();
+				ver_ready = 1;
 			} else {
 				halt("ver limit switch not wokring properly");
 			}
@@ -123,21 +132,27 @@ void t_init_ver_motor(void)
 	}
 }
 
-void t_init_hor_motor(void)
-{
-	while (k_sem_take(&init_hor, K_FOREVER)) {
-		hor_set_starting_position();
-		if (ver_is_starting_pos() && hor_is_starting_pos()) {
+void t_init_hor_motor(void){
+	while(1){
+		if(k_sem_take(&init_hor, K_FOREVER) == 0) {
+			hor_set_starting_position();
+			while(!ver_is_starting_pos() || !hor_is_starting_pos()) {
+				k_msleep(10);
+			}
+			k_msleep(100);
 			hor_set_dir(RIGHT);
 			for (int i = 0; i < 500; i++) {
 				hor_move_step();
 			}
 			if (!hor_is_starting_pos()) {
+				k_msleep(200);
 				hor_set_starting_position();
+				hor_ready = 1;
 			} else {
 				halt("hor limit switch not wokring properly");
 			}
 		}
+		
 		k_msleep(1000);
 	}
 }
@@ -146,11 +161,11 @@ K_THREAD_DEFINE(hor_motor, 2048, t_horizontal_motor, NULL, NULL, NULL, 4, 0, -1)
 K_THREAD_DEFINE(ver_motor, 2048, t_vertical_motor, NULL, NULL, NULL, 4, 0, -1);
 K_THREAD_DEFINE(led_thread, 2048, t_led, NULL, NULL, NULL, 5, 0, 0);
 K_THREAD_DEFINE(access_resource, 2048, t_access_resource, NULL, NULL, NULL, 8, 0, 0);
+
 K_THREAD_DEFINE(init_ver_motor, 2048, t_init_ver_motor, NULL, NULL, NULL, 1, 0, 0);
 K_THREAD_DEFINE(init_hor_motor, 2048, t_init_hor_motor, NULL, NULL, NULL, 1, 0, 0);
 
-void main(void)
-{
+void main(void){
 	setup();
 	uart_setup();
 	isr_setup();
@@ -168,10 +183,14 @@ void main(void)
 
 	reset_and_check();
 
+	while(!ver_ready || !hor_ready){
+		k_msleep(10);
+	}
+	
+
 	k_thread_start(hor_motor);
 	k_thread_start(ver_motor);
 	unblock_server();
-
 	set_status_led(STATUS_OK);
 
 	while (1) {

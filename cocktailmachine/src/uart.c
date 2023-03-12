@@ -79,10 +79,6 @@ void uart_timer_cb(struct k_timer *timer_id){
         if(!initialized){
             initialized = 1;
         }
-        else{
-            unblock_server();
-        }
-        set_status_led(STATUS_OK);
         SEGGER_RTT_printf(0, "Settings updated\n");
     }
         

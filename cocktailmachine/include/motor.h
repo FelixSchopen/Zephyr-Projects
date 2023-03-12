@@ -17,10 +17,10 @@
 #define POS3 23100
 
 #define FILL_POS 20000
-#define FILL_TIME_MS 1000 
+#define FILL_TIME_MS 1500 
 
 #define VER_STEP_DELAY 20
-#define HOR_STEP_DELAY 900
+#define HOR_STEP_DELAY 700
 
 int ver_is_starting_pos(void);
 

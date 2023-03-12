@@ -7,25 +7,25 @@
         ver_step: pd11 {
             gpios = <&gpiod 11 (GPIO_ACTIVE_HIGH )>;
         };
-        ver_enable: pd13 {
+        /*ver_enable: pd13 {
             gpios = <&gpiod 13 (GPIO_ACTIVE_LOW )>;
-        };
+        };*/
         hor_dir: pc1 {
             gpios = <&gpioc 1 (GPIO_ACTIVE_HIGH )>;
         };
         hor_step: pc3 {
             gpios = <&gpioc 3 (GPIO_ACTIVE_HIGH )>;
         };
-        hor_enable: pa1 {
+        /*hor_enable: pa1 {
             gpios = <&gpioa 1 (GPIO_ACTIVE_LOW )>;
-        };
+        };*/
     };
 
     
     limit-switches {
         compatible = "gpio-keys";
         ver_limit_sw0: pc15 {
-            gpios = <&gpioc 9 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
+            gpios = <&gpiob 8 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
         };
         /*ver_limit_sw1: pa6 {
             gpios = <&gpioa 6 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;

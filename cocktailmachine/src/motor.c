@@ -107,19 +107,19 @@ void fill_glass(int ml){
 		next_fill_time = FILL_TIME_MS;
 
 		if(remaining_ml < 10){
-			next_fill_pos -= 6000;
+			next_fill_pos -= 1000;
 			next_fill_time = 0;
 		}
 		else if(remaining_ml < 20){
-			next_fill_pos -= 4000;
+			next_fill_pos -= 600;
 			next_fill_time = 0;
 		}
 		else if (remaining_ml < 30){
-			next_fill_pos -= 2000;
+			next_fill_pos -= 200;
 			next_fill_time = 0;
 		}
 		else if (remaining_ml < 40){
-			next_fill_time = 0;
+			next_fill_time = 400;
 		}
 
 		for(int i = 0; i < next_fill_pos; i++){
