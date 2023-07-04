@@ -14,13 +14,13 @@ void toggle_led(void){
     gpio_pin_toggle_dt(&led);
 }
 
-K_THREAD_DEFINE(t_led, 1024, toggle_led, NULL, NULL, NULL, 1, 0, -1);
+K_THREAD_DEFINE(t_inversion, 1024, toggle_led, NULL, NULL, NULL, 1, 0, -1);
 
 void main(void){ 
     gpio_pin_configure_dt(&led, GPIO_OUTPUT_INACTIVE);
 
     while(1){
-        k_thread_start(t_led);
+        k_thread_start(t_inversion);
         k_msleep(1000);
     }
 

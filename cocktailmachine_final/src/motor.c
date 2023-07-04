@@ -26,6 +26,7 @@ void hor_set_dir(int dir){
 }
 
 void ver_move_step(void){
+
 	access_shared_resources_1();
 
 	gpio_pin_toggle_dt(&ver_step_spec);
@@ -35,13 +36,13 @@ void ver_move_step(void){
 }
 
 void hor_move_step(void){
-	access_shared_resources_1();
 	
-	gpio_pin_toggle_dt(&hor_step_spec);
-	k_usleep(HOR_STEP_DELAY);
-	gpio_pin_toggle_dt(&hor_step_spec);
-	k_usleep(HOR_STEP_DELAY);
+	access_shared_resources_1();
 
+	gpio_pin_toggle_dt(&hor_step_spec);
+	k_usleep(HOR_STEP_DELAY);
+	gpio_pin_toggle_dt(&hor_step_spec);
+	k_usleep(HOR_STEP_DELAY);
 }
 
 // Moves hor motor to starting position
@@ -92,9 +93,11 @@ void move_to_pos(int target_pos){
 // Fills glass with the desired amount in ml by 
 // repeatedly moving the vertical motor up and down 
 void fill_glass(int ml){
+
 	int remaining_ml = ml;
 	int next_fill_pos;
 	int next_fill_time;
+
 
 	while(1){
 		if(remaining_ml == 0){
@@ -120,6 +123,7 @@ void fill_glass(int ml){
 		else if (remaining_ml < 40){
 			next_fill_time = 400;
 		}
+
 
 		for(int i = 0; i < next_fill_pos; i++){
 			ver_move_step();

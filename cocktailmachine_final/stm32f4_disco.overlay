@@ -1,0 +1,47 @@
+/ {
+    gpio-pins {
+        compatible = "gpio-keys";
+        ver_dir: pd11 {
+            gpios = <&gpiod 11 (GPIO_ACTIVE_HIGH )>;
+        };
+        ver_step: pd13 {
+            gpios = <&gpiod 13 (GPIO_ACTIVE_HIGH )>;
+        };
+        /*ver_enable: pd15 {
+            gpios = <&gpiod 15 (GPIO_ACTIVE_LOW )>;
+        };*/
+        hor_dir: pa9 {
+            gpios = <&gpioa 9 (GPIO_ACTIVE_HIGH )>;
+        };
+        hor_step: pc9 {
+            gpios = <&gpioc 9 (GPIO_ACTIVE_HIGH )>;
+        };
+        /*hor_enable: pc7 {
+            gpios = <&gpioc 7 (GPIO_ACTIVE_LOW )>;
+        };*/
+    };
+
+    
+    limit-switches {
+        compatible = "gpio-keys";
+        ver_limit_sw0: pe7 {
+            gpios = <&gpioe 7 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
+        };
+        /*ver_limit_sw1: pe11 {
+            gpios = <&gpioe 11 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
+        };*/
+        hor_limit_sw0: pb5 {
+            gpios = <&gpiob 5 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
+        };
+        /*hor_limit_sw1: pd6 {
+            gpios = <&gpiod 6 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
+        };*/
+    };
+};
+
+usart: &usart2 {
+	status = "okay";
+	pinctrl-0 = <&usart2_tx_pa2 &usart2_rx_pa3 >;
+	pinctrl-names = "default";
+	current-speed = <9600>;
+};

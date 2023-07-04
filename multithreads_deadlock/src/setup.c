@@ -10,8 +10,8 @@ const struct gpio_dt_spec blue_led_6_spec = GPIO_DT_SPEC_GET(DT_NODELABEL(blue_l
 
 const struct device* pwm_servo = DEVICE_DT_GET(DT_NODELABEL(servo));
 
-struct k_mutex my_mutex1;
-struct k_mutex my_mutex2;
+struct k_mutex resource_mutex1;
+struct k_mutex resource_mutex2;
 struct k_mutex mutex3;
 uint8_t mutex4 = 1;
 

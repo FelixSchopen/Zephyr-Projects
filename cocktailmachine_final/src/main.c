@@ -19,10 +19,6 @@ void t_horizontal_motor(void){
 			ver_ready = 0;
 			hor_ready = 0;
 
-			k_mutex_lock(&block_mutex, K_FOREVER);
-			resource++;
-			k_mutex_unlock(&block_mutex);
-
 			while (k_queue_is_empty(&position_q) == 0) {
 				item = k_queue_get(&position_q, K_NO_WAIT);
 				pos = item->data.pos;
@@ -51,11 +47,13 @@ void t_horizontal_motor(void){
 				k_sem_give(&fill_glass_sem);
 				k_sem_take(&move_to_pos_sem, K_FOREVER);
 			}
-			reset_and_check();
-
-			while(!ver_ready || !hor_ready){
-				k_msleep(10);
+			
+			hor_set_dir(LEFT);
+			while(hor_current_pos > 500){
+				hor_move_step();
+				hor_current_pos--;
 			}
+			
 			unblock_server();
 			set_status_led(STATUS_OK);
 		}
@@ -70,10 +68,8 @@ void t_vertical_motor(void){
 		if (k_sem_take(&fill_glass_sem, K_MSEC(500)) == 0) {
 			while (k_queue_is_empty(&amount_q) == 0) {
 				item = k_queue_get(&amount_q, K_NO_WAIT);
-				amount = item->data.amount;
-				amount = cocktail_size * (amount / 100);
+				amount = cocktail_size * item->data.amount * 0.01;
 
-				k_msleep(2000);
 				fill_glass(amount);
 
 				k_free(item);
@@ -87,17 +83,23 @@ void t_vertical_motor(void){
 
 void t_deadlock(void){
 	while (1) {
-		if(release_deadlock){
-			access_shared_resources_2();
+		k_sem_take(&deadlock_sem, K_FOREVER);
+		while(1){
+			if(access_shared_resources_2() == -1){
+				k_mutex_unlock(&resource_mutex1);
+				k_mutex_unlock(&resource_mutex2);
+				release_deadlock = 0;
+				break;
+			}
+			k_msleep(100);
 		}
-		k_msleep(100);
 	}
 }
 
 void t_inversion(void){
 	while (1) {
 		k_sem_take(&inversion_sem, K_FOREVER);
-		block_resource();
+		block_mutex_inversion();
 		k_msleep(100);
 	}
 }
@@ -138,8 +140,6 @@ void t_init_hor_motor(void){
 				hor_move_step();
 			}
 			if (!hor_is_starting_pos()) {
-				k_msleep(200);
-				hor_set_starting_position();
 				hor_ready = 1;
 			} else {
 				halt("hor limit switch not working properly");
@@ -165,7 +165,6 @@ void main(void){
 	isr_setup();
 
 	set_status_led(STATUS_BLOCKED);
-
 
 	while (!initialized) {
 		SEGGER_RTT_printf(0, "Waiting for server...\n");

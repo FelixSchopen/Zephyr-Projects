@@ -115,13 +115,11 @@ void uart_timer_cb(struct k_timer *timer_id){
     }
 
     else if(strcmp(rx_buf, "deadlock") == 0){
-        release_deadlock = 1; 
+        k_sem_give(&deadlock_sem);
     }
 
     else if(strcmp(rx_buf, "release") == 0){
-        release_deadlock = 0; 
-        k_mutex_unlock(&resource_mutex1);
-        k_mutex_unlock(&resource_mutex2);
+        release_deadlock = 1; 
     }
     else if(strcmp(rx_buf, "inversion") == 0){
         k_sem_give(&inversion_sem);
