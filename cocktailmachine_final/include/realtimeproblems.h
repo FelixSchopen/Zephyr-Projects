@@ -3,8 +3,8 @@
 
 #include "setup.h"
 
-void access_shared_resources_1(void);
-int access_shared_resources_2(void);
+void access_virtual_resource_1(void);
+int access_virtual_resource_2(void);
 
 void block_mutex_inversion(void);
 

@@ -85,7 +85,7 @@ void t_deadlock(void){
 	while (1) {
 		k_sem_take(&deadlock_sem, K_FOREVER);
 		while(1){
-			if(access_shared_resources_2() == -1){
+			if(access_virtual_resource_2() == -1){
 				k_mutex_unlock(&resource_mutex1);
 				k_mutex_unlock(&resource_mutex2);
 				release_deadlock = 0;

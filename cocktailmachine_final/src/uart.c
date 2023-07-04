@@ -33,11 +33,11 @@ void rx_callback(const struct device *dev, void *user_data){
     int i = *((int*)user_data);
     if(uart_irq_rx_ready(dev)){
         /*  
-            Restart timer every time a new character arrives.
-            if no new char arrives within 50ms the timer 
-            callback executes and resets the rx_buffer.
-            This is used beacuse Zephyr UART-API only reads 
-            one character at a time.
+         Restart timer every time a new character arrives.
+         if no new character arrives within 20ms the timer 
+         callback executes and resets the rx_buffer.
+         This is used beacuse Zephyr UART-API only reads 
+         one character at a time.
         */
         k_timer_stop(&my_timer);
         k_timer_start(&my_timer, K_MSEC(20), K_NO_WAIT);
@@ -48,11 +48,14 @@ void rx_callback(const struct device *dev, void *user_data){
 }      
 
 // Timer callback executes when uart reception completed
-
+// The constructed string will be compared and the command from the GUI will trigger a reaction by the system
 void uart_timer_cb(struct k_timer *timer_id){
 
-    // Block server until settings operation finished
     // Check if valid command identifier was received
+    // Command identifier is used when a command consists of two string which are sent to the system seperatly
+
+    // For example: when updating the drink setting, the first string sent from the server is the command identifier "drinks". Shortly
+    // after the JSON-String with the information of the drink configurations will be sent. 
     if(strcmp(rx_buf, "drinks") == 0 || strcmp(rx_buf, "cocktails") == 0 || strcmp(rx_buf, "mix") == 0){
         strncpy(cmd_idetifier, rx_buf, sizeof(cmd_idetifier));
         memset(&rx_buf[0], 0, sizeof(rx_buf));
@@ -82,7 +85,7 @@ void uart_timer_cb(struct k_timer *timer_id){
         SEGGER_RTT_printf(0, "Settings updated\n");
     }
         
-
+    // Command to mix a cocktail
     else if(strcmp(cmd_idetifier, "mix") == 0){
         set_status_led(STATUS_BLOCKED);
 
@@ -114,29 +117,36 @@ void uart_timer_cb(struct k_timer *timer_id){
         k_sem_give(&move_to_pos_sem);
     }
 
+    // Command to trigger deadlock
     else if(strcmp(rx_buf, "deadlock") == 0){
         k_sem_give(&deadlock_sem);
     }
 
+    // Command to release deadlock
     else if(strcmp(rx_buf, "release") == 0){
         release_deadlock = 1; 
     }
+
+    // Command to trigger priority inversion
     else if(strcmp(rx_buf, "inversion") == 0){
         k_sem_give(&inversion_sem);
     }
     
-    // reset identifier and buffer
+    // Reset command identifier and buffer
     strncpy(cmd_idetifier, "", sizeof(cmd_idetifier));
     memset(&rx_buf[0], 0, sizeof(rx_buf));
     idx = 0; 
 }
 
+// Funtion to setuup UART
 void uart_setup(void){
     k_timer_init(&my_timer, uart_timer_cb, NULL);
     uart_irq_rx_enable(uart_dev); 
     uart_irq_callback_user_data_set(uart_dev, rx_callback, (void*)&idx);
 }
 
+// The server will be blocked if the system is busy. When the server is blocked no commands will be sent to the machine.
+// This function unblocks the server
 void unblock_server(void){
 	uart_write("unblock\n", sizeof("unblock\n"));
 }

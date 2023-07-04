@@ -4,6 +4,7 @@
 #include "setup.h"
 
 // Struct to describe an available drink on the machine
+// i.e. Vodka, 1
 struct drink {
     char* name;     // Name of the drink
     uint16_t position;   // Position of the bottle
@@ -20,12 +21,11 @@ struct ingredient {
 struct cocktail {
     char* name;      // Name of the cocktail
     struct ingredient ingredients[4]; // Array of the ingredients
-    uint16_t ingredient_count;  // Length of the ingredient-array
+    uint16_t ingredient_count;  // Number of fields in the ingredient array that are not null
 };
 
-/**
- * Structs to hold arrays of drinks and cocktails
-*/
+// Structs to hold arrays of drinks and cocktails
+// Seems redundant but, because you could simply save the drinks and cocktails directly to an array but is needed by the JSON-Libary
 struct drink_array { 
     struct drink drinks[4]; 
     size_t count; 

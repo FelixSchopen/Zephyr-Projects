@@ -26,7 +26,7 @@ void hor_set_dir(int dir){
 }
 
 void ver_move_step(void){
-	access_shared_resources_1();
+	access_virtual_resource_1();
 
 	gpio_pin_toggle_dt(&ver_step_spec);
 	k_usleep(VER_STEP_DELAY);
@@ -34,8 +34,9 @@ void ver_move_step(void){
 	k_usleep(VER_STEP_DELAY);
 }
 
+// Take one one step with horizontal motor
 void hor_move_step(void){
-	access_shared_resources_1();
+	access_virtual_resource_1();
 	
 	gpio_pin_toggle_dt(&hor_step_spec);
 	k_usleep(HOR_STEP_DELAY);
@@ -76,7 +77,6 @@ void move_to_pos(int target_pos){
 		while(hor_current_pos < target_pos){
 			hor_move_step();
 			hor_current_pos++;
-			SEGGER_RTT_printf(0, "hor pos: %d\n", hor_current_pos);
 		}
 	}
 	else{
@@ -84,7 +84,6 @@ void move_to_pos(int target_pos){
 		while(hor_current_pos > target_pos){
 			hor_move_step();
 			hor_current_pos--;
-			SEGGER_RTT_printf(0, "hor pos: %d\n", hor_current_pos);
 		}
 	}
 }

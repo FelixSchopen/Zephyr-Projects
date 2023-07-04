@@ -11,7 +11,7 @@ int release_deadlock = 0;
 int resource = 0;
 
 
-void access_shared_resources_1(void){
+void access_virtual_resource_1(void){
     // Try to lock mutex1
     while(k_mutex_lock(&resource_mutex1, K_NO_WAIT) != 0) {
         k_usleep(1);

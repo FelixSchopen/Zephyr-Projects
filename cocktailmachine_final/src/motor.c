@@ -25,9 +25,10 @@ void hor_set_dir(int dir){
     gpio_pin_set_dt(&hor_dir_spec, dir);
 }
 
+// Take one step with vertical motor
 void ver_move_step(void){
-
-	access_shared_resources_1();
+	
+	access_virtual_resource_1();
 
 	gpio_pin_toggle_dt(&ver_step_spec);
 	k_usleep(VER_STEP_DELAY);
@@ -35,9 +36,10 @@ void ver_move_step(void){
 	k_usleep(VER_STEP_DELAY);
 }
 
+// Take one step with horizontal motor
 void hor_move_step(void){
 	
-	access_shared_resources_1();
+	access_virtual_resource_1();
 
 	gpio_pin_toggle_dt(&hor_step_spec);
 	k_usleep(HOR_STEP_DELAY);
@@ -45,24 +47,24 @@ void hor_move_step(void){
 	k_usleep(HOR_STEP_DELAY);
 }
 
-// Moves hor motor to starting position
-void hor_set_starting_position(void){
-    hor_set_dir(LEFT);
-	while(!hor_is_starting_pos()){
-		hor_move_step();
-	}
-	gpio_pin_set_dt(&hor_step_spec, 0);
-	hor_current_pos = 0;
-}
-
+// Moves ver motor to starting position and sets step count to 0 
 void ver_set_starting_position(void){
 	ver_set_dir(UP);
 	while(!ver_is_starting_pos()){
 		ver_move_step();
 	}
-	gpio_pin_set_dt(&ver_step_spec, 0);
 	ver_current_pos = 0;
 }
+
+// Moves hor motor to starting position and sets step count to 0 
+void hor_set_starting_position(void){
+    hor_set_dir(LEFT);
+	while(!hor_is_starting_pos()){
+		hor_move_step();
+	}
+	hor_current_pos = 0;
+}
+
 
 // Moves both motors to starting positions and checks if limit switches work correctly
 void reset_and_check(void){
@@ -70,14 +72,13 @@ void reset_and_check(void){
 	k_sem_give(&init_hor);
 }
 
-// Moves horizontal motor to a targetes position
+// Moves horizontal motor to a specific position
 void move_to_pos(int target_pos){
 	if(hor_current_pos < target_pos){
         hor_set_dir(RIGHT);
 		while(hor_current_pos < target_pos){
 			hor_move_step();
 			hor_current_pos++;
-			SEGGER_RTT_printf(0, "hor pos: %d\n", hor_current_pos);
 		}
 	}
 	else{
@@ -85,7 +86,6 @@ void move_to_pos(int target_pos){
 		while(hor_current_pos > target_pos){
 			hor_move_step();
 			hor_current_pos--;
-			SEGGER_RTT_printf(0, "hor pos: %d\n", hor_current_pos);
 		}
 	}
 }
@@ -108,6 +108,8 @@ void fill_glass(int ml){
 		next_fill_pos = FILL_POS;
 		next_fill_time = FILL_TIME_MS;
 
+		// Change vertical motor position and fill time depending on remaining ml
+		// Inaccurate ways to fill glass with less than 40ml 
 		if(remaining_ml < 10){
 			next_fill_pos -= 1000;
 			next_fill_time = 0;
