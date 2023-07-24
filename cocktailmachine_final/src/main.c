@@ -150,14 +150,15 @@ void t_init_hor_motor(void){
 	}
 }
 
-K_THREAD_DEFINE(hor_motor, 2048, t_horizontal_motor, NULL, NULL, NULL, 4, 0, -1);
-K_THREAD_DEFINE(ver_motor, 2048, t_vertical_motor, NULL, NULL, NULL, 4, 0, -1);
-
-K_THREAD_DEFINE(virtual_deadlock_thread, 2048, t_deadlock, NULL, NULL, NULL, 5, 0, 0);
-K_THREAD_DEFINE(virtual_inversion_thread, 2048, t_inversion, NULL, NULL, NULL, 8, 0, 0);
-
 K_THREAD_DEFINE(init_ver_motor, 2048, t_init_ver_motor, NULL, NULL, NULL, 1, 0, 0);
 K_THREAD_DEFINE(init_hor_motor, 2048, t_init_hor_motor, NULL, NULL, NULL, 1, 0, 0);
+
+K_THREAD_DEFINE(hor_motor, 2048, t_horizontal_motor, NULL, NULL, NULL, 2, 0, -1);
+K_THREAD_DEFINE(ver_motor, 2048, t_vertical_motor, NULL, NULL, NULL, 2, 0, -1);
+
+K_THREAD_DEFINE(deadlock, 2048, t_deadlock, NULL, NULL, NULL, 3, 0, 0);
+K_THREAD_DEFINE(priority_inversion, 2048, t_inversion, NULL, NULL, NULL, 3, 0, 0);
+
 
 void main(void){
 	setup();
