@@ -1,9 +1,6 @@
 #include "../include/isr.h"
 
-struct gpio_callback cb_data0;
-struct gpio_callback cb_data1;
 struct gpio_callback cb_data2;
-struct gpio_callback cb_data3;
 
 // User-Button ISR that aborts the system
 void isr_user_button(){
