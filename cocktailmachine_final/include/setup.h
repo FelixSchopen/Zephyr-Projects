@@ -25,8 +25,6 @@
 #define STATUS_ERROR -1
 #define STATUS_BLOCKED 1
 
-extern int debug;
-
 /**
  * GPIOs
  */ 
@@ -49,12 +47,6 @@ extern const struct gpio_dt_spec green;
 extern const struct gpio_dt_spec red ;
 extern const struct gpio_dt_spec blue;
 extern const struct gpio_dt_spec orange;
-
-
-/**
- * Devices
- */
-
 
 /**
  * Semaphores
