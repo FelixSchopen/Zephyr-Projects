@@ -19,7 +19,7 @@
 #define FILL_POS 20000
 #define FILL_TIME_MS 1500 
 
-#define VER_STEP_DELAY 20
+#define VER_STEP_DELAY 10
 #define HOR_STEP_DELAY 700
 
 int ver_is_starting_pos(void);

@@ -14,14 +14,14 @@ int release_deadlock = 0;
 void access_virtual_resource_1(void){
     // Try to lock mutex1
     while(k_mutex_lock(&resource_mutex1, K_NO_WAIT) != 0) {
-        k_msleep(100);        
+        k_usleep(1);        
     }
 
     k_usleep(1); // Put thread to sleep, in order to increase deadlock propability
 
     // Try to lock mutex2
     while(k_mutex_lock(&resource_mutex2, K_NO_WAIT) !=0){
-        k_msleep(100);
+        k_usleep(1);
     }
     
     // If the system had a shared resource it should be acessed here
@@ -39,7 +39,7 @@ void access_virtual_resource_1(void){
 int access_virtual_resource_2(void){
     // Try to lock mutex2
     while(k_mutex_lock(&resource_mutex2, K_NO_WAIT) != 0) {
-        k_msleep(100);
+        k_usleep(1);
     } 
     
     k_usleep(1); // Put thread to sleep, in order to increase deadlock propability
@@ -49,7 +49,7 @@ int access_virtual_resource_2(void){
         if(release_deadlock){
             return -1;
         }
-        k_msleep(100);
+        k_usleep(100);
     }
     
     // If the system had a shared resource it should be acessed here
