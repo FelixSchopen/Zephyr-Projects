@@ -110,20 +110,17 @@ void fill_glass(int ml){
 
 		// Change vertical motor position and fill time depending on remaining ml
 		// Inaccurate ways to fill glass with less than 40ml 
-		if(remaining_ml < 10){
-			next_fill_pos -= 1000;
+		if(remaining_ml <= 10){
+			next_fill_pos -= 1200;
 			next_fill_time = 0;
 		}
-		else if(remaining_ml < 20){
-			next_fill_pos -= 600;
+		else if(remaining_ml <= 20){
+			next_fill_pos -= 800;
 			next_fill_time = 0;
 		}
-		else if (remaining_ml < 30){
-			next_fill_pos -= 200;
+		else if (remaining_ml <= 30){
+			next_fill_pos -= 400;
 			next_fill_time = 0;
-		}
-		else if (remaining_ml < 40){
-			next_fill_time = 400;
 		}
 
 

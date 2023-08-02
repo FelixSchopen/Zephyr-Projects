@@ -49,7 +49,7 @@ int access_virtual_resource_2(void){
         if(release_deadlock){
             return -1;
         }
-        k_usleep(100);
+        k_usleep(1);
     }
     
     // If the system had a shared resource it should be acessed here
